@@ -113,9 +113,10 @@ Vue.component('forecast-chart', {
   methods: {
     render: function() {
       if (this.forecast) {
-        var min = this.forecast.time[0];
-        var max = new Date(min.getTime() + 2*24*60*60*1000);
-        this.renderChart({
+        const min = this.forecast.time[0];
+        const max = new Date(min.getTime() + 2*24*60*60*1000);
+
+        const data = {
           labels: this.forecast.time,
           datasets: [
             {
@@ -136,8 +137,9 @@ Vue.component('forecast-chart', {
               data: this.forecast.series.rain,
             }
           ],
-        },
-        {
+        };
+
+        const options = {
           responsive: true,
           maintainAspectRatio: false,
           title: {
@@ -157,7 +159,9 @@ Vue.component('forecast-chart', {
               { type: 'linear', display: true, position: 'right', id: 'y-axis-2' },
             ]
           },
-        });
+        };
+
+        this.renderChart(data, options);
       }
     }
   }
