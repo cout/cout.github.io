@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+  <meta charset="utf-8"/>
+  <head>
+    <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-default/index.css">
+  </head>
+  <body>
+    <div id="app">
+      <!-- TODO: I feel like this should be in a form -->
+      <!-- TODO: I really want this to be in a component -->
+      <el-input placeholder="City/State or Zip" icon="search" v-model="location" :on-icon-click="getPoint" @keyup.enter.native="getPoint"></el-input>
+
+      <!-- TODO: this shouldn't be visible when the page is first loaded -->
+      <div>{{ message }}</div>
+
+      <forecast-chart v-bind:forecast="forecast" />
+    </div>
+
+    <!-- TODO: maps? -->
+    <!-- TODO: find out if vue-chartjs is using chart.js 2.0 -->
+    <!-- TODO: https://github.com/chartjs/chartjs-plugin-zoom -->
+    <script src="https://unpkg.com/vue"></script> <!-- 72 KB -->
+    <script src="https://unpkg.com/vue-router"></script> <!-- 16 KB -->
+    <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.full.min.js"></script> <!-- 141 KB -->
+    <script src="https://unpkg.com/element-ui/lib/index.js"></script> <!-- 96 KB -->
+
+    <script>
+
+// From http://ccoenraets.github.io/es6-tutorial-data/promisify/
+let request = obj => {
+  return new Promise((resolve, reject) => {
+    let xhr = new XMLHttpRequest();
+    xhr.open(obj.method || "GET", obj.url);
+    if (obj.headers) {
+      Object.keys(obj.headers).forEach(key => {
+        xhr.setRequestHeader(key, obj.headers[key]);
+      });
+    }
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        resolve(xhr.response);
+      } else {
+        reject(xhr.statusText);
+      }
+    };
+    xhr.onerror = () => reject(xhr.statusText);
+    xhr.send(obj.body);
+  });
+};
+
+// From https://developer.mozilla.org/en-US/docs/Web/XPath/Snippets
+function evaluateXPath(aNode, aExpr) {
+  var xpe = new XPathEvaluator();
+  var nsResolver = xpe.createNSResolver(aNode.ownerDocument == null ?
+    aNode.documentElement : aNode.ownerDocument.documentElement);
+  var result = xpe.evaluate(aExpr, aNode, nsResolver, 0, null);
+  var found = [];
+  var res;
+  while (res = result.iterateNext())
+    found.push(res);
+  return found;
+}
+
+class Forecast {
+  constructor(location, time, series) {
+    this.location = location
+    this.time = time;
+    this.series = series;
+  }
+
+  static url(lat, lon) {
+    // TODO: should uri-escape lat/lon
+    return "http://forecast.weather.gov/MapClick.php?lat=" + lat + "&lon=" + lon + "&FcstType=digitalDWML"
+  }
+
+  static parse(res) {
+    var parser = new DOMParser();
+    var doc = parser.parseFromString(res, "application/xml");
+
+    var location = evaluateXPath(doc, "/dwml/data/location/*[self::description or self::area-description]/text()")[0].wholeText;
+		var time = evaluateXPath(doc, "/dwml/data/time-layout/start-valid-time/text()").map((t) => { return new Date(t.wholeText); });
+    var temp = evaluateXPath(doc, "/dwml/data/parameters/temperature[@type='hourly']/value/text()").map((t) => { return t.wholeText; });
+    var rain = evaluateXPath(doc, "/dwml/data/parameters/hourly-qpf[@type='floating']/value/text()").map((t) => { return t.wholeText; });
+
+    return new Forecast(location, time, { temperature: temp, rain: rain });
+  }
+
+  static fetch(lat, lon) {
+    var url = Forecast.url(lat, lon);
+    console.log(url);
+    return request({url: url}).then((res) => {
+      return Forecast.parse(res);
+    });
+  }
+}
+
+Vue.component('forecast-chart', {
+  extends: VueChartJs.Bar,
+
+  props: ['forecast'],
+
+  mounted: function() {
+    this.render();
+  },
+
+  watch: {
+    forecast: function() {
+      this.render();
+    }
+  },
+
+  methods: {
+    render: function() {
+      if (this.forecast) {
+        var min = this.forecast.time[0];
+        var max = new Date(min.getTime() + 2*24*60*60*1000);
+        this.renderChart({
+          labels: this.forecast.time,
+          datasets: [
+            {
+              label: 'Temperature (F)',
+              borderColor: '#ff0000',
+              backgroundColor: '#ff0000',
+              fill: false,
+              yAxisID: 'y-axis-1',
+              pointRadius: 0,
+              data: this.forecast.series.temperature,
+              type: 'line'
+            },
+            {
+              label: 'Rain (inches)',
+              yAxisID: 'y-axis-2',
+              borderColor: '#0000ff',
+              backgroundColor: '#0000ff',
+              data: this.forecast.series.rain,
+            }
+          ],
+        },
+        {
+          responsive: true,
+          maintainAspectRatio: false,
+          title: {
+            display: true,
+            text: "Forecast for " + this.forecast.location,
+          },
+          scales: {
+            xAxes: [
+              // TODO:
+              // * unit 'hour' isn't a very versatile format (I'd like to see day of week in there)
+              // * how to do major/minor ticks?
+              // * when we scale in/out, I'd like some of the x-axis labls to disappear (or e.g. if we are on a phone screen)
+              { type: 'time', time: { min: min, max: max, unit: 'hour' }, barPercentage: 1, ticks: { source: 'labels' } }
+            ],
+            yAxes: [
+              { type: 'linear', display: true, position: 'left', id: 'y-axis-1' },
+              { type: 'linear', display: true, position: 'right', id: 'y-axis-2' },
+            ]
+          },
+        });
+      }
+    }
+  }
+});
+
+var router = new VueRouter({
+  mode: 'history', // TODO: what does this do?
+  routes: []
+});
+
+var app = new Vue({
+  router,
+  el: '#app',
+  data: {
+    message: undefined,
+    location: undefined,
+    lat: undefined,
+    lon: undefined,
+    forecast: undefined,
+  },
+
+  created: function() {
+  },
+
+  watch: {
+  },
+
+  filters: {
+  },
+
+  mounted: function() {
+    // TODO: instead of using the query string, use an anchor
+    this.lat = this.$route.query.lat;
+    this.lon = this.$route.query.lon;
+
+    this.getForecast();
+  },
+
+  methods: {
+    getPoint: function() {
+      this.message = "";
+      // {"spatialReference":{"wkid":4326,"latestWkid":4326},"locations":[{"name":"Johns Island, South Carolina","extent":{"xmin":-80.101839999999939,"ymin":32.700720000000025,"xmax":-80.061839999999947,"ymax":32.740720000000032},"feature":{"geometry":{"x":-80.081839999999943,"y":32.720720000000028},"attributes":{}}}]}
+      var url = 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find?text=' + this.location + '&f=json'
+      request({url: url}).then((res) => {
+        var data = JSON.parse(res);
+        console.log(data);
+        var location = data.locations[0];
+
+        if (location) {
+          var lat = location.feature.geometry.y;
+          var lon = location.feature.geometry.x;
+          console.log(lat, lon);
+
+          // TODO: instead of setting lat/lon, change the document location
+          this.lat = lat.toFixed(4);
+          this.lon = lon.toFixed(3);
+          this.getForecast();
+        } else {
+          this.message = "Not found";
+        }
+      }).catch((error) => {
+        console.log('error:', error);
+        this.message = error;
+      });
+    },
+
+    getForecast: function() {
+      if (this.lat && this.lon) {
+        var self = this;
+        Forecast.fetch(this.lat, this.lon).then((forecast) => {
+          console.log("got forecast", forecast);
+          self.forecast = forecast;
+        }).catch((error) => {
+          console.log('error:', error);
+          this.message = error;
+        });
+      }
+    }
+  }
+});
+
+    </script>
+  </body>
+</html>
