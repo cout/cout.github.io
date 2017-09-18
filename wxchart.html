@@ -70,7 +70,7 @@ class Forecast {
 
   static url(lat, lon) {
     // TODO: should uri-escape lat/lon
-    return "http://forecast.weather.gov/MapClick.php?lat=" + lat + "&lon=" + lon + "&FcstType=digitalDWML"
+    return "https://forecast.weather.gov/MapClick.php?lat=" + lat + "&lon=" + lon + "&FcstType=digitalDWML"
   }
 
   static parse(res) {
@@ -199,7 +199,7 @@ var app = new Vue({
     getPoint: function() {
       this.message = "";
       // {"spatialReference":{"wkid":4326,"latestWkid":4326},"locations":[{"name":"Johns Island, South Carolina","extent":{"xmin":-80.101839999999939,"ymin":32.700720000000025,"xmax":-80.061839999999947,"ymax":32.740720000000032},"feature":{"geometry":{"x":-80.081839999999943,"y":32.720720000000028},"attributes":{}}}]}
-      var url = 'http://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find?text=' + this.location + '&f=json'
+      var url = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find?text=' + this.location + '&f=json'
       request({url: url}).then((res) => {
         var data = JSON.parse(res);
         console.log(data);
