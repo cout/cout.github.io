@@ -7,22 +7,22 @@
   </head>
   <body>
     <div id="app">
-      <!-- TODO: I feel like this should be in a form -->
-      <!-- TODO: I really want this to be in a component -->
+      <!-- // TODO: I feel like this should be in a form -->
+      <!-- // TODO: I really want this to be in a component -->
       <el-input placeholder="City/State or Zip" icon="search" v-model="location" :on-icon-click="getPoint" @keyup.enter.native="getPoint"></el-input>
 
-      <!-- TODO: this shouldn't be visible when the page is first loaded -->
+      <!-- // TODO: this shouldn't be visible when the page is first loaded -->
       <div>{{ message }}</div>
 
       <forecast-chart v-bind:forecast="forecast" />
     </div>
 
-    <!-- TODO: maps? -->
-    <!-- TODO: find out if vue-chartjs is using chart.js 2.0 -->
-    <!-- TODO: https://github.com/chartjs/chartjs-plugin-zoom -->
-    <script src="https://unpkg.com/vue"></script> <!-- 72 KB -->
-    <script src="https://unpkg.com/vue-router"></script> <!-- 16 KB -->
-    <script src="https://unpkg.com/vue-chartjs/dist/vue-chartjs.full.min.js"></script> <!-- 141 KB -->
+    <!-- // TODO: maps? -->
+    <!-- // TODO: find out if vue-chartjs is using chart.js 2.0 -->
+    <!-- // TODO: https://github.com/chartjs/chartjs-plugin-zoom -->
+    <script src="https://unpkg.com/chart.js/dist/Chart.bundle.min.js"></script> <!-- 62 KB -->
+    <script src="https://unpkg.com/vue/dist/vue.min.js"></script> <!-- 81 KB -->
+    <script src="https://unpkg.com/vue-router/dist/vue-router.min.js"></script> <!-- 23 KB -->
     <script src="https://unpkg.com/element-ui/lib/index.js"></script> <!-- 96 KB -->
 
     <script>
@@ -96,22 +96,30 @@ class Forecast {
 }
 
 Vue.component('forecast-chart', {
-  extends: VueChartJs.Bar,
+  props: {
+    forecast: { default: undefined },
+    width: { default: 400, type: Number },
+    height: { default: 400, type: Number },
+  },
 
-  props: ['forecast'],
+  render(h) {
+    // TODO: how to format this function?
+    return h('div',
+      [ h('canvas', { attrs: { width: this.width, height: this.height }, ref: 'chart' }) ]);
+  },
 
-  mounted: function() {
-    this.render();
+  mounted() {
+    this.draw();
   },
 
   watch: {
-    forecast: function() {
-      this.render();
+    forecast() {
+      this.draw();
     }
   },
 
   methods: {
-    render: function() {
+    draw() {
       if (this.forecast) {
         const min = this.forecast.time[0];
         const max = new Date(min.getTime() + 2*24*60*60*1000);
@@ -161,7 +169,7 @@ Vue.component('forecast-chart', {
           },
         };
 
-        this.renderChart(data, options);
+        new Chart(this.$refs.chart.getContext('2d'), { type: 'bar', data: data, options: options });
       }
     }
   }
