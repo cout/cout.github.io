@@ -4,6 +4,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <head>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-default/index.css">
+    <style>
+      @keyframes spinner {
+        to { transform: rotate(360deg); }
+      }
+      .spinner:before {
+        content: '';
+        box-sizing: border-box;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 20px;
+        height: 20px;
+        margin-top: -10px;
+        margin-left: -10px;
+        border-radius: 50%;
+        border: 2px solid #ccc;
+        border-top-color: #333;
+        animation: spinner .6s linear infinite;
+      }
+    </style>
   </head>
   <body>
     <div id="app">
@@ -14,7 +34,7 @@
       <!-- // TODO: this shouldn't be visible when the page is first loaded -->
       <div>{{ message }}</div>
 
-      <forecast-chart v-bind:forecast="forecast" />
+      <forecast-chart v-bind:forecast="forecast" v-bind:class="{ spinner: loading_forecast }" />
     </div>
 
     <!-- // TODO: maps? -->
@@ -98,6 +118,7 @@ class Forecast {
 Vue.component('forecast-chart', {
   props: {
     forecast: { default: undefined },
+    loading_forecast: { default: false },
     width: { default: 400, type: Number },
     height: { default: 400, type: Number },
   },
@@ -189,6 +210,7 @@ var app = new Vue({
     lat: undefined,
     lon: undefined,
     forecast: undefined,
+    loading_forecast: false,
   },
 
   created: function() {
@@ -239,12 +261,14 @@ var app = new Vue({
     getForecast: function() {
       if (this.lat && this.lon) {
         var self = this;
+        this.loading_forecast = true;
         Forecast.fetch(this.lat, this.lon).then((forecast) => {
-          console.log("got forecast", forecast);
           self.forecast = forecast;
         }).catch((error) => {
           console.log('error:', error);
           this.message = error;
+        }).then(() => {
+          this.loading_forecast = false;
         });
       }
     }
