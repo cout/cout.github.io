@@ -4,6 +4,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <head>
     <link rel="stylesheet" href="https://unpkg.com/element-ui/lib/theme-default/index.css">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css">
     <style>
       @keyframes spinner {
         to { transform: rotate(360deg); }
@@ -23,6 +24,9 @@
         border-top-color: #333;
         animation: spinner .6s linear infinite;
       }
+      .forecast-map {
+        height: 400px;
+      }
     </style>
   </head>
   <body>
@@ -34,16 +38,18 @@
       <!-- // TODO: this shouldn't be visible when the page is first loaded -->
       <div>{{ message }}</div>
 
-      <forecast-chart v-bind:forecast="forecast" v-bind:class="{ spinner: loading_forecast }" />
+      <div><forecast-chart v-bind:forecast="forecast" v-bind:class="{ spinner: loading_forecast }" /></div>
+      <div><forecast-map v-bind:point="point" class="forecast-map" /></div>
     </div>
 
     <!-- // TODO: maps? -->
     <!-- // TODO: find out if vue-chartjs is using chart.js 2.0 -->
     <!-- // TODO: https://github.com/chartjs/chartjs-plugin-zoom -->
     <script src="https://unpkg.com/chart.js/dist/Chart.bundle.min.js"></script> <!-- 62 KB -->
-    <script src="https://unpkg.com/vue/dist/vue.min.js"></script> <!-- 81 KB -->
+    <script src="https://unpkg.com/vue/dist/vue.js"></script> <!-- 81 KB -->
     <script src="https://unpkg.com/vue-router/dist/vue-router.min.js"></script> <!-- 23 KB -->
     <script src="https://unpkg.com/element-ui/lib/index.js"></script> <!-- 96 KB -->
+    <script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
 
     <script>
 
@@ -89,9 +95,9 @@ class Forecast {
     this.series = series;
   }
 
-  static url(lat, lon) {
+  static url(point) {
     // TODO: should uri-escape lat/lon
-    return "https://forecast.weather.gov/MapClick.php?lat=" + lat + "&lon=" + lon + "&FcstType=digitalDWML"
+    return "https://forecast.weather.gov/MapClick.php?lat=" + point.lat + "&lon=" + point.lon + "&FcstType=digitalDWML"
   }
 
   static parse(res) {
@@ -106,8 +112,8 @@ class Forecast {
     return new Forecast(location, time, { temperature: temp, rain: rain });
   }
 
-  static fetch(lat, lon) {
-    var url = Forecast.url(lat, lon);
+  static fetch(point) {
+    var url = Forecast.url(point);
     console.log(url);
     return request({url: url}).then((res) => {
       return Forecast.parse(res);
@@ -196,6 +202,49 @@ Vue.component('forecast-chart', {
   }
 });
 
+Vue.component('forecast-map', {
+  props: {
+    point: { default: undefined },
+    height: { default: 400, type: Number },
+  },
+
+  render(h) {
+    console.log("render");
+    return h('div', { ref: 'map' });
+  },
+
+  mounted() {
+    console.log("HERE");
+    this.draw();
+  },
+
+  watch: {
+    point() { this.setview(); }
+  },
+
+  methods: {
+    draw() {
+      console.log("drawing map");
+      this.map = new L.Map(this.$refs.map);
+
+      L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(this.map);
+
+      this.setview();
+    },
+
+    setview() {
+      if (this.point) {
+        console.log("setting map location to", this.point);
+        console.log("" + this.point.lat);
+        console.log("" + this.point.lon);
+        this.map.setView([this.point.lat, this.point.lon], 13); // TODO: extents
+      }
+    },
+  }
+});
+
 var router = new VueRouter({
   mode: 'history', // TODO: what does this do?
   routes: []
@@ -207,8 +256,7 @@ var app = new Vue({
   data: {
     message: undefined,
     location: undefined,
-    lat: undefined,
-    lon: undefined,
+    point: undefined,
     forecast: undefined,
     loading_forecast: false,
   },
@@ -224,8 +272,7 @@ var app = new Vue({
 
   mounted: function() {
     // TODO: instead of using the query string, use an anchor
-    this.lat = this.$route.query.lat;
-    this.lon = this.$route.query.lon;
+    this.point = { lat: this.$route.query.lat, lon: this.$route.query.lon };
 
     this.getForecast();
   },
@@ -237,17 +284,14 @@ var app = new Vue({
       var url = 'https://geocode.arcgis.com/arcgis/rest/services/World/GeocodeServer/find?text=' + this.location + '&f=json'
       request({url: url}).then((res) => {
         var data = JSON.parse(res);
-        console.log(data);
         var location = data.locations[0];
 
         if (location) {
           var lat = location.feature.geometry.y;
           var lon = location.feature.geometry.x;
-          console.log(lat, lon);
 
           // TODO: instead of setting lat/lon, change the document location
-          this.lat = lat.toFixed(4);
-          this.lon = lon.toFixed(3);
+          this.point = { lat: lat.toFixed(4), lon: lon.toFixed(3) };
           this.getForecast();
         } else {
           this.message = "Not found";
@@ -259,10 +303,10 @@ var app = new Vue({
     },
 
     getForecast: function() {
-      if (this.lat && this.lon) {
+      if (this.point) {
         var self = this;
         this.loading_forecast = true;
-        Forecast.fetch(this.lat, this.lon).then((forecast) => {
+        Forecast.fetch(this.point).then((forecast) => {
           self.forecast = forecast;
         }).catch((error) => {
           console.log('error:', error);
