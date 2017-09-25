@@ -227,12 +227,44 @@ Vue.component('forecast-map', {
       console.log("drawing map");
       this.map = new L.Map(this.$refs.map);
 
+// https://digital.weather.gov/wms.php?LAYERS=ndfd.conus.ppi&FORMAT=image/png&TRANSPARENT=TRUE&VERSION=1.3.0&VT=2017-09-24T00:00&EXCEPTIONS=INIMAGE&SERVICE=WMS&REQUEST=GetMap&STYLES=&CRS=EPSG:3857&BBOX=-12523442.851872,2504688.124384,-10018754.355829,5009376.6204267&WIDTH=512&HEIGHT=512
       L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
         attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
       }).addTo(this.map);
 
+      // TODO: this one appears to need VT= or we get a blank image
+      /*
+      L.tileLayer.wms("https://digital.weather.gov/wms.php", {
+        layers: 'ndfd.conus.ppi',
+        format: 'image/png',
+        transparent: true,
+        opacity: 0.0,
+      }).addTo(this.map);
+      */
+
+      // https://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Observations/radar_base_reflectivity/MapServer/export?dpi=96&transparent=true&format=png32&layers=show:3&bbox=-15007566.239655226,3023415.260804621,-5429089.351185768,6565201.403425606&bboxSR=102100&imageSR=102100&size=979,362&f=image
+      L.tileLayer.wms("https://idpgis.ncep.noaa.gov/arcgis/rest/services/NWS_Observations/radar_base_reflectivity/MapServer/export", {
+        attribution: 'Radar images from <a href="http://www.nws.noaa.gov/gis/services.html">NWS</a>',
+        dpi: '96',
+        f: 'image',
+        layers: 'show:3',
+        format: 'png',
+        transparent: true,
+      }).addTo(this.map);
+
       this.setview();
     },
+      /*
+      L.tileLayer.wms("http://mesonet.agron.iastate.edu/cgi-bin/wms/nexrad/n0r.cgi", {
+        layers: 'nexrad-n0r-900913',
+        format: 'image/png',
+        transparent: true,
+        opacity: 0.0,
+      }).addTo(this.map);
+
+      this.setview();
+    },
+    */
 
     setview() {
       if (this.point) {
