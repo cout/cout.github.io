@@ -11,4 +11,4 @@ github_username: cout
 markdown: kramdown
 auto: true
 
-theme: jekyll-theme-minimal
+theme: jekyll-theme-slate
