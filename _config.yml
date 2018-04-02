@@ -10,3 +10,5 @@ twitter_username: paulbrannan
 github_username: cout
 markdown: kramdown
 auto: true
+
+theme: jekyll-theme-minimal
