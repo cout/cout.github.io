@@ -9,3 +9,4 @@ url: "http://cout.github.io/"
 twitter_username: paulbrannan
 github_username: cout
 markdown: kramdown
+auto: true
