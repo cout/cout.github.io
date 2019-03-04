@@ -9,6 +9,7 @@ description: > #
   BAZ
 baseurl: ""
 url: "http://cout.github.io/"
+repository: "cout/cout.github.io"
 twitter:
   username: "paul_brannan"
 github_username: cout
@@ -19,6 +20,7 @@ auto: true
 plugins: [ 'jekyll-include-cache' ]
 remote_theme: "mmistakes/minimal-mistakes@4.15.2"
 minimal_mistakes_skin: "contrast"
+
 defaults:
   # _posts
   - scope:
@@ -31,7 +33,29 @@ defaults:
       comments: true
       share: true
       related: true
+
 comments:
   provider: utterances
+
 paginate: 10
 paginate_path: /recent/page:num/
+
+author:
+  name: "Paul brannan"
+  avatar: "https://avatars2.githubusercontent.com/u/4090"
+  bio: "my bio"
+  location: "my location"
+  email: "my@email"
+  links:
+    - label: "Email"
+      icon: "fas fa-fw fa-envelope-square"
+      url: mailto:my@email
+    - label: "Website"
+      icon: "fas fa-fw fa-link"
+      url: https://cout.github.io/
+    - label: "Twitter"
+      icon: "fab fa-fw fa-twitter-square"
+      url: "https://twitter.com/paul_brannan"
+    - label: "GitHub"
+      icon: "fab fa-fw fa-github"
+      url: "https://github.com/cout/"
