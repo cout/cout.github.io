@@ -9,7 +9,6 @@ url: "http://cout.github.io/"
 repository: "cout/cout.github.io"
 twitter:
   username: "paul_brannan"
-github_username: cout
 markdown: kramdown
 timezone: EST5EDT
 auto: true
@@ -41,6 +40,7 @@ author:
   name: "Paul Brannan"
   avatar: "https://avatars2.githubusercontent.com/u/4090"
   bio: "my bio"
+  location: Charleston, SC
   email:
   links:
     - label: "Twitter"
