@@ -10,6 +10,7 @@ repository: "cout/cout.github.io"
 twitter:
   username: "paul_brannan"
 markdown: kramdown
+highlighter: rouge
 timezone: EST5EDT
 auto: true
 # theme: minimal-mistakes-jekyll
