@@ -1,5 +1,8 @@
+local: "en-US"
 title: Nonstandard Output
+name: Paul Brannan
 email: cout@rubystuff.org
+logo: https://avatars2.githubusercontent.com/u/4090
 description: > #
   FOO
   BAR
