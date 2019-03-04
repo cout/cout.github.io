@@ -47,27 +47,6 @@ author:
   location: "my location"
   email: "my@email"
   links:
-    - label: "Email"
-      icon: "fas fa-fw fa-envelope-square"
-      url: mailto:my@email
-    - label: "Website"
-      icon: "fas fa-fw fa-link"
-      url: https://cout.github.io/
-    - label: "Twitter"
-      icon: "fab fa-fw fa-twitter-square"
-      url: "https://twitter.com/paul_brannan"
-    - label: "GitHub"
-      icon: "fab fa-fw fa-github"
-      url: "https://github.com/cout/"
-
-footer:
-  links:
-    - label: "Email"
-      icon: "fas fa-fw fa-envelope-square"
-      url: mailto:my@email
-    - label: "Website"
-      icon: "fas fa-fw fa-link"
-      url: https://cout.github.io/
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
       url: "https://twitter.com/paul_brannan"
