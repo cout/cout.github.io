@@ -11,3 +11,4 @@ github_username: cout
 markdown: kramdown
 timezone: EST5EDT
 auto: true
+theme: minimal-mistakes-jekyll
