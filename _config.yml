@@ -32,3 +32,5 @@ defaults:
       related: true
 comments:
   provider: utterances
+paginate: 10
+paginate_path: /recent/page:num/
