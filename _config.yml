@@ -9,7 +9,8 @@ description: > #
   BAZ
 baseurl: ""
 url: "http://cout.github.io/"
-twitter_username: paulbrannan
+twitter:
+  username: "paul_brannan"
 github_username: cout
 markdown: kramdown
 timezone: EST5EDT
@@ -29,3 +30,5 @@ defaults:
       comments: true
       share: true
       related: true
+comments:
+  provider: utterances
