@@ -7,7 +7,7 @@ tags: []
 
 I decided yesterday to play with [autocmd](http://http://vimdoc.sourceforge.net/htmldoc/autocmd.html):
 
-```>
+```vim>
 function EditFileLine(file_line)
   let file = substitute(a:file_line, '\(.*\):\(.*\)', '', '')
   let line = substitute(a:file_line, '\(.*\):\(.*\)', '', '')
@@ -29,7 +29,7 @@ Actually, it highlights the line under the cursor.  I wanted to turn the highlig
 
 Sample usage:
 
-```>
+```bash>
 $ vim File.cpp +58 # before I had to type this
 $ vim File.cpp:58  # now I can type this
 ```
