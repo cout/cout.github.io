@@ -53,5 +53,5 @@ author:
       icon: "fas fa-fw fa-tachometer-alt"
       url: "https://www.facebook.com/RacePrius"
     - label: "rubystuff.org"
-      icon: "gas fa-fw fa-gem"
+      icon: "fas fa-fw fa-gem"
       url: "http://rubystuff.org/"
