@@ -1,3 +1,40 @@
+auto: true
+plugins: [ 'jekyll-include-cache' ]
+remote_theme: "mmistakes/minimal-mistakes@4.15.2"
+
+# local: "en-US"
+# title: Nonstandard Output
+# name: Paul Brannan
+# email: cout@rubystuff.org
+# logo: "https://avatars2.githubusercontent.com/u/4090"
+# description: > #
+#   FOO
+#   BAR
+#   BAZ
+# baseurl: ""
+# url: "http://cout.github.io/"
+# twitter_username: paulbrannan
+# github_username: cout
+# markdown: kramdown
+# timezone: EST5EDT
+# auto: true
+# # theme: minimal-mistakes-jekyll
+# plugins: [ 'jekyll-include-cache' ]
+# remote_theme: "mmistakes/minimal-mistakes@4.15.2"
+# defaults:
+#   # _posts
+#   - scope:
+#     path: ""
+#       type: posts
+#     values:
+#       layout: single
+#       author_profile: true
+#       read_time: true
+#       comments: true
+#       share: true
+#      related: true
+
+
 # Welcome to Jekyll!
 #
 # This config file is meant for settings that affect your entire site, values
