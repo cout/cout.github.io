@@ -1,24 +1,10 @@
 ---
-layout: post
-status: publish
-published: true
 title: Stupid vim trick
-author:
-  display_name: cout
-  login: cout
-  email: curlypaul924@gmail.com
-  url: ''
-author_login: cout
-author_email: curlypaul924@gmail.com
-wordpress_id: 43
-wordpress_url: http://nonstandard-output.rubystuff.org/?p=43
-date: '2010-12-17 11:09:46 -0500'
-date_gmt: '2010-12-17 16:09:46 -0500'
 categories:
 - vim
 tags: []
-comments: []
 ---
+
 I decided yesterday to play with []():
 
 ```>
