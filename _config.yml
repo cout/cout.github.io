@@ -44,8 +44,6 @@ author:
   name: "Paul Brannan"
   avatar: "https://avatars2.githubusercontent.com/u/4090"
   bio: "my bio"
-  location: "my location"
-  email: "my@email"
   links:
     - label: "Twitter"
       icon: "fab fa-fw fa-twitter-square"
