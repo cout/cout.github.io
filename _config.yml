@@ -11,4 +11,6 @@ github_username: cout
 markdown: kramdown
 timezone: EST5EDT
 auto: true
-theme: minimal-mistakes-jekyll
+# theme: minimal-mistakes-jekyll
+plugins: [ 'jekyll-include-cache' ]
+remote_theme: "mmistakes/minimal-mistakes@4.15.2"
