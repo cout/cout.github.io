@@ -5,7 +5,7 @@ categories:
 tags: []
 ---
 
-I decided yesterday to play with []():
+I decided yesterday to play with [autocmd](http://http://vimdoc.sourceforge.net/htmldoc/autocmd.html):
 
 ```>
 function EditFileLine(file_line)
@@ -34,7 +34,7 @@ $ vim File.cpp +58 # before I had to type this
 $ vim File.cpp:58  # now I can type this
 ```
 
-It's odd how few examples I could find on the web that 1) use the []()() function with match groups, 2) reference []() (need to use the a: prefix), or 3) demonstrate how to use the []() and []() commands (the former is like typing a : in normal mode and then a command, while the latter is like playing back a macro from a function to simulate keypresses).
+It's odd how few examples I could find on the web that 1) use the [substitute](http://vimdoc.sourceforge.net/htmldoc/eval.html#substitute%28%29)() function with match groups, 2) reference [function arguments](http://vimdoc.sourceforge.net/htmldoc/eval.html#a:var) (need to use the a: prefix), or 3) demonstrate how to use the [execute](http://vimdoc.sourceforge.net/htmldoc/eval.html#:execute) and [normal](http://vimdoc.sourceforge.net/htmldoc/various.html#:normal) commands (the former is like typing a : in normal mode and then a command, while the latter is like playing back a macro from a function to simulate keypresses).
 
-Some people might suggest that I learn how to use :make and :cope, and others might suggest that I use emacs.  I stopped using an IDE over ten years ago when I stopped using []() and [](), so I've been using the command line for too long to be comfortable with either of those "solutions".
+Some people might suggest that I learn how to use :make and :cope, and others might suggest that I use emacs.  I stopped using an IDE over ten years ago when I stopped using [Turbo C](http://edn.embarcadero.com/article/20841) and [RHIDE](http://www.rhide.com/), so I've been using the command line for too long to be comfortable with either of those "solutions".
 
