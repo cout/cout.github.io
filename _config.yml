@@ -49,3 +49,6 @@ author:
     - label: "GitHub"
       icon: "fab fa-fw fa-github"
       url: "https://github.com/cout/"
+    - label: "Race Prius"
+      icon: "fab fa-fw fa-car"
+      url: "https://www.facebook.com/RacePrius"
