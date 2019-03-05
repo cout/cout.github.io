@@ -60,7 +60,7 @@ Ludicrous does this by walking the instruction sequence and pushing and popping 
 
 Ludicrous does its best to detect this situation if it ever comes up and will refuse to compile bytecode that tries to do evil things like this.&nbsp; However, I recently discovered a case that wasn't covered:
 
-```
+```ruby
 irb(main):001:0> require 'internal/method'
 => true
 irb(main):002:0> def foo; return true ? 1 : 2; end
