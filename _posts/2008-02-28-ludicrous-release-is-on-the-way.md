@@ -37,7 +37,7 @@ Ludicrous-compiled methods and MRI-interpreted methods can thus live safely toge
 
 Benchmarks show it to be on par or better than YARV:
 
-<pre>
+```
 cout@bean:~/ludicrous/sample$ ruby simple_benchmark.rb
                            user     system      total        real
 Ackermann function     0.600000   0.020000   0.620000 (  0.645012)
