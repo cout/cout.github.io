@@ -39,7 +39,7 @@ $base0f: #cc6633;
  
 @import "minimal-mistakes";
 
-html {
+.page * {
   font-size: 10px;
 
   @include breakpoint($medium) {
