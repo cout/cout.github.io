@@ -17,7 +17,7 @@ class Foo
     return 42
   end
 
- go_plaid
+  go_plaid
 end
 
 puts Foo.new.foo #=> 42
