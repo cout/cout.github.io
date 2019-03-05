@@ -1,9 +1,5 @@
 local: "en-US"
 title: Nonstandard Output
-description: > #
-  FOO
-  BAR
-  BAZ
 baseurl: ""
 url: "http://cout.github.io/"
 repository: "cout/cout.github.io"
@@ -41,7 +37,7 @@ paginate_path: /recent/page:num/
 author:
   name: "Paul Brannan"
   avatar: "https://avatars2.githubusercontent.com/u/4090"
-  bio: "my bio"
+  bio:
   location: Charleston, SC
   email:
   links:
