@@ -40,6 +40,7 @@ $base0f: #cc6633;
 @import "minimal-mistakes";
 
 .page * {
+  margin-bottom: 1.0em;
   font-size: 10px;
 
   @include breakpoint($medium) {
@@ -57,5 +58,5 @@ $base0f: #cc6633;
 
 .highlight {
    line-height: 1.0;
-   margin-top: -1.3em;
+   margin-top: -1.0em;
 }
