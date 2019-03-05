@@ -35,7 +35,7 @@ Step 2: Load the pdf into acrobat and print it to a ps file
 
 Step 3: Convert the entire ps file to a series of pgm (greyscale) images.  The greyscale takes a little more processing time, but the text labels turn out a bit nicer this way.
 
-```
+```bash
 gs -sDEVICE=pgm -r300x300 -dNOPAUSE -sOutputFile=page%03d.pgm wiring.ps
 ```
 
@@ -48,7 +48,7 @@ Step 4: I considered writing a script for this step, but it turns out someone's 
 
 I'll start with one page for now:
 
-```
+```bash
 potrace -b xfig -o page001.xfig page001.pgm
 ```
 
