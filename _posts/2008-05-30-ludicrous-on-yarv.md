@@ -11,7 +11,7 @@ tags: []
 ---
 Last night I was tinkering with Ludicrous and I decided to see how hard it would be to get it to run on YARV.  After modifying the extension to compile against ruby 1.9, it turned out to be only a handful of lines of code to compile a simple method in YARV:
 
-```
+```ruby
 class Foo
   def foo
     return 42
@@ -25,7 +25,7 @@ puts Foo.new.foo #=> 42
 
 The primary difference between methods on 1.8 and methods on YARV is that methods in 1.8 are represented by SCOPE nodes that hold a reference to that method&#8217;s AST, while YARV methods are represented by a METHOD node that holds a reference to that method&#8217;s instruction sequence.  The code for compiling METHOD nodes and SCOPE nodes is remarkably similar, the primary difference lying in the code that compiles the instruction sequence:
 
-```
+```ruby
 class VM
   class Instruction
     class PUTOBJECT
