@@ -10,7 +10,7 @@ highlighter: rouge
 timezone: EST5EDT
 auto: true
 # theme: minimal-mistakes-jekyll
-plugins: [ 'jekyll-include-cache' ]
+plugins: [ 'jekyll-include-cache', 'jekyll-feed' ]
 remote_theme: "mmistakes/minimal-mistakes@4.15.2"
 minimal_mistakes_skin: "default"
 excerpt_separator: <!--more-->
