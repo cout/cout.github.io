@@ -1,25 +1,11 @@
 ---
-layout: post
-status: publish
-published: true
 title: Color wiring diagrams
-author:
-  display_name: cout
-  login: cout
-  email: curlypaul924@gmail.com
-  url: ''
-author_login: cout
-author_email: curlypaul924@gmail.com
-wordpress_id: 34
-wordpress_url: http://nonstandard-output.rubystuff.org/?p=34
 date: '2010-11-05 21:09:27 -0400'
-date_gmt: '2010-11-06 02:09:27 -0400'
 categories:
 - Uncategorized
 tags:
 - wiring diagram
 - postscript
-comments: []
 ---
 Whenever I look at a car wiring diagram, I tend to get cross-eyed.  The entire thing is usually black-and-white with labels to indicate wire color.  When I see a loose wire in the engine bay, it often takes as much as twenty minutes to figure out where in the diagram that wire is located.
 
