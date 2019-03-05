@@ -1,15 +1,5 @@
 ---
-layout: post
-status: publish
-published: true
 title: Converting stack-to-register
-author:
-  display_name: cout
-  login: cout
-  email: curlypaul924@gmail.com
-  url: ''
-author_login: cout
-author_email: curlypaul924@gmail.com
 wordpress_id: 14
 wordpress_url: http://nonstdout.rubystuff.org/?p=14
 date: '2009-12-20 10:49:54 -0500'
@@ -64,10 +54,13 @@ comments:
   date_gmt: '2016-06-25 01:47:56 -0400'
   content: "Good !|Cool! I love your this bolg.\r\ncheap albion gold http://albion-online.bloggersdelight.dk/relationship-of-laborer-and-housing-system-in-albion-online/"
 ---
-<p>Like many other virtual machines, the YARV machine is stack-based.&nbsp; Because most modern CPUs are register-based, to compile YARV bytecode to efficient native code means the stack operations need to be converted to register operations.</p>
-<p>Ludicrous does this by walking the instruction sequence and pushing and popping value objects onto and off of a stack at compile-time.&nbsp; This completely eliminates the YARV stack (the machine stack is still used by libjit as necessary), but has some limitations: all control paths must produce an identical stack.&nbsp; A conditional that produces a different size stack in one path than in another will break this scheme.</p>
-<p>Ludicrous does its best to detect this situation if it ever comes up and will refuse to compile bytecode that tries to do evil things like this.&nbsp; However, I recently discovered a case that wasn't covered:</p>
-<pre><code>
+Like many other virtual machines, the YARV machine is stack-based.&nbsp; Because most modern CPUs are register-based, to compile YARV bytecode to efficient native code means the stack operations need to be converted to register operations.
+
+Ludicrous does this by walking the instruction sequence and pushing and popping value objects onto and off of a stack at compile-time.&nbsp; This completely eliminates the YARV stack (the machine stack is still used by libjit as necessary), but has some limitations: all control paths must produce an identical stack.&nbsp; A conditional that produces a different size stack in one path than in another will break this scheme.
+
+Ludicrous does its best to detect this situation if it ever comes up and will refuse to compile bytecode that tries to do evil things like this.&nbsp; However, I recently discovered a case that wasn't covered:
+
+```
 irb(main):001:0> require 'internal/method'
 => true
 irb(main):002:0> def foo; return true ? 1 : 2; end
@@ -81,7 +74,11 @@ irb(main):003:0> puts method(:foo).body.body.disasm
 0008 trace&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 16
 0010 leave
 => nil
-</code></pre>
-<p>Here YARV has made an optimization -- true is always true, so a conditional branch is unnecessary.  However YARV wasn't smart enough to remove the dead code that pushes '2' onto the stack.  When Ludicrous compiles this, it gets confused because at the leave instruction the stack contains [ 1, 2 ] (remember that Ludicrous evaluates the stack at compile time).</p>
-<p>I suspect this is a bug in the YARV optimizer, but it illustrates the case -- converting code written for a stack machine to run on a register machine is no trivial task.  I'm not sure yet how to handle this case.  All control paths (there is only one) do produce the same stack, but Ludicrous does not have a mechanism to detect that the second pushobject instruction is dead code and does not modify the stack.</p>
-<p>Perhaps the best solution is to raise an exception and fall back on the interpreter for functions that do this.</p>
+```
+
+Here YARV has made an optimization -- true is always true, so a conditional branch is unnecessary.  However YARV wasn't smart enough to remove the dead code that pushes '2' onto the stack.  When Ludicrous compiles this, it gets confused because at the leave instruction the stack contains [ 1, 2 ] (remember that Ludicrous evaluates the stack at compile time).
+
+I suspect this is a bug in the YARV optimizer, but it illustrates the case -- converting code written for a stack machine to run on a register machine is no trivial task.  I'm not sure yet how to handle this case.  All control paths (there is only one) do produce the same stack, but Ludicrous does not have a mechanism to detect that the second pushobject instruction is dead code and does not modify the stack.
+
+Perhaps the best solution is to raise an exception and fall back on the interpreter for functions that do this.
+
