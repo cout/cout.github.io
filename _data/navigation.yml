@@ -1,0 +1,7 @@
+main:
+  - title: "About"
+    url: "/about.md"
+  - title: "Talks"
+    url: "/talks.md"
+  - title: "Projects"
+    url: "/projects.md"
