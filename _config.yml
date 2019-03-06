@@ -1,5 +1,5 @@
 local: "en-US"
-title: Nonstandard Output
+title:
 baseurl: ""
 url: "http://cout.github.io/"
 repository: "cout/cout.github.io"
