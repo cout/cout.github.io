@@ -1,7 +1,7 @@
 main:
   - title: "About"
-    url: "/about.md"
+    url: "/about.html"
   - title: "Talks"
-    url: "/talks.md"
+    url: "/talks.html"
   - title: "Projects"
-    url: "/projects.md"
+    url: "/projects.html"
