@@ -8,27 +8,9 @@ categories:
 - ludicrous
 - ruby
 tags: []
-comments:
-- id: 2
-  author: roger
-  author_email: ''
-  author_url: ''
-  date: '2008-12-23 12:34:45 -0500'
-  date_gmt: '2008-12-23 17:34:45 -0500'
-  content: gem available?
-- id: 47
-  author: Risi
-  author_email: hcpy1lbvw@yahoo.com
-  author_url: http://www.facebook.com/profile.php?id=100003458722742
-  date: '2014-08-18 13:49:00 -0400'
-  date_gmt: '2014-08-18 18:49:00 -0400'
-  content: Thank you Brian, I am new to ClickBank so I am looking from which way I
-    sholud be starting my business and which products to target. I tried to download
-    your spreadsheet data but it's in .xlsx extension? Does that work under Office
-    2007? I've got Office 2003, will check it out later. At the moment, I am trying
-    to collect as much info I can regarding Affiliate marketing so I can earn some
-    good revenue from it.
+comments: []
 ---
+
 A number of months ago I began working on a [just-in-time compiler](http://rubystuff.org/ludicrous) for Ruby 1.8.  What started as an experiment is actually now a reality &#8211; Ludicrous is now an executable that can run ruby scripts just like MRI!
 
 Based on some ideas Charles Nutter mentioned on his blog regarding JRuby, Ludicrous works by installing stubs for every method in a given class that jit-compile the methods when they are called.  If a method can&#8217;t be jit-compiled, the stub is removed and Ludicrous reverts back to the interpreter version of the method.
