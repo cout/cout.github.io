@@ -17,7 +17,7 @@ metric socket sizes (which are in millimeters) to SAE socket sizes
 
 Consider a 1&frasl;2" battery terminal.  If there are 256mm/10in, then there are 128mm/in, or 12.8mm per inch.  So a 13mm socket will be ~.2mm larger than the bolt head.
 
-I find going the other way a little trickier, but not too bad.  For the 13mm socket, I remember that 1mm is 10*1/256in, so 13mm is 130&frasl;256".  The closest power of two to 130 is 128, and 128&frasl;256" is 1&frasl;2".  So a 13mm socket is just 2&frasl;256" bigger than a 1&frasl;2".
+I find going the other way a little trickier, but not too bad.  For the 13mm socket, I remember that 1mm is 10*1&frasl;256", so 13mm is 130&frasl;256".  The closest power of two to 130 is 128, and 128&frasl;256" is 1&frasl;2".  So a 13mm socket is just 2&frasl;256" bigger than a 1&frasl;2".
 
 Why is this useful?  Sometimes it useful to use a socket size that's close rather than an exact match.  A battery terminal is usually a 1&frasl;2" socket, but what if you're on the side of the road and you only have metric sockets on hand?  Grab a 13mm and it will be a close enough fit.  Or what if your 13mm bolt head is rusted?  Chances are it's not a 13mm head any more, and a 1&frasl;2" socket will be a tighter fit.
 
