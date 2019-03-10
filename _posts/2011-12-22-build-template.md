@@ -10,7 +10,6 @@ The syntax is clunky, the semantics are unintuitive, it's hard to get parallel b
 Nevertheless, I stick with it, because it's ubiquitous and it's the simplest solution for what I do.
 
 A simple Makefile might look like this:
-
 ```make
 all: main
 

@@ -1,0 +1,7 @@
+main:
+  - title: "About"
+    url: "/about.html"
+  - title: "Talks"
+    url: "/talks.html"
+  - title: "Projects"
+    url: "/projects.html"
