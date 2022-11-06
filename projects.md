@@ -1,9 +1,18 @@
-[Ludicrous](https://github.com/cout/ludicrous) - a just-in-time compiler for Ruby, written in Ruby
+[Fenestra](https://github.com/cout/fenestra) - a libretro frontend,
+similar to Retroarch
 
-[Ruby-internal](https://github.com/cout/ruby-internal) - a library for accessing internals of the Ruby interpreter that are not normally exposed
+[Ludicrous](https://github.com/cout/ludicrous) - a just-in-time compiler
+for Ruby, written in Ruby
 
-[Ruby-libjit](https://github.com/cout/ruby-libjit) - a Ruby extension for the libjit library
+[Ruby-internal](https://github.com/cout/ruby-internal) - a library for
+accessing internals of the Ruby interpreter that are not normally
+exposed
 
-[Rice](https://github.com/jasonroelofs/rice) - the Ruby Interface for C++ Extensions
+[Ruby-libjit](https://github.com/cout/ruby-libjit) - a Ruby extension
+for the libjit library
 
-[ROMP](http://rubystuff.org/romp/) - the Ruby Object Message Proxy, an alternative to drb
+[Rice](https://github.com/jasonroelofs/rice) - the Ruby Interface for
+C++ Extensions
+
+[ROMP](http://rubystuff.org/romp/) - the Ruby Object Message Proxy, an
+alternative to drb
