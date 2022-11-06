@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html>
+  <head>
+    <style>
+body {
+  color: #cccccc;
+  background-color: #000000;
+}
+.hidden {
+  display: none;
+}
+#debug {
+  font-size: small;
+}
+item {
+  display: block;
+  width: 32px;
+  height: 32px;
+  position: relative;
+  text-align: right;
+  /* text-shadow: 1px 1px 2px black; */
+  text-shadow: -1px -1px 0 black, 1px -1px 0 black, -1px 1px 0 black, 1px 1px 0 black;
+}
+item::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  filter: saturate(0%);
+  z-index: -1;
+}
+item.collected::before {
+  filter: saturate(100%);
+}
+#bombs::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAMFBMVEVHcEyEeX9KSVJCQVJKSVohICmloqX/Wb2ESSnc6ev/+///0yl7cXuloq0YGCmcmqXgv/InAAAAAXRSTlMAQObYZgAAAJxJREFUKM+F0VsRAyEMBdBYiIVYwEIsYCEWYiEWYgELawELWKgFGrad/Viy7f0gcHgMDABQ+pzems/ZC6zcofRy5ZQNeonV/bUSkgGSC5EZUa2EOQiZRoweQAhJ9ThUAySHajFuTe0P1F+wHbrDdbEHiM7ncZQDUtTo15j5vvYOKCLrG6JgCgDMeIYZIAP2gWNtWYVTGBxxX+1I4A3G9qk1+LO9IgAAAABJRU5ErkJggg==); }
+#charge::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAFVBMVEVHcEyYmLAYGDBoaIBAQFj4+PgAAABC4u1eAAAAAXRSTlMAQObYZgAAAIhJREFUKM910VERgDAMA9BaqIVYiIVYmAX8SyBlgztG6Qe3vrtAgIgaAL6QREQHgISA8kihA5/oA8dhYQt53awgW4BYiWCuyC88j/0CBmafVX0HJ2b1expwL8NMAz9gUW3rM+wwyEkSe5ALc81VbIMSDKo2qoWq48Wcz3/aYVR157TecQe85gsnwM5M5zXupBMAAAAASUVORK5CYII=); }
+#draygon::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAMFBMVEVHcEzF2oZcamDY2toDGwAyWSJJcTYRMgUgRhFli06AomhWNQV6WRWevHaijgDSV5+yzySaAAAABHRSTlMA/YtvC/W7UAAAAbFJREFUKM9Nzr1r20AYBvAXmqVfQ6BQWgiZ+p+cdQavOllS2yHDyVI/tpNO1B11OrlzpFqGbI3AJiJLIINM9iLFkKGhFuQvqDB0LQSqNir1M738Xnh4QJul+dXaIvFVQi2LEsgWRr47b889EmqS6FDT9/k607RpHQkLRxyej45mmUboZ8cVOpIC6qmZ0jSO7IkXccx9iCPHSagjfbcXoDagi7TtnlOGMfK5ykB4KdXNjLD2KyhhQD7VtnJDJcISDd0QgXB2j/PrIRq/eosCnzPg2lG6R1mvujyRfVWLgLvEXI+Q8ev2a6nYlg7Il06qssuf+yfnUW9mAkJ9zZLe7X69ZjiMDQCJI531Tp8p786luOYAgDDDffOLcYi9JPzeQruYI/HSQyoyHBX+ZEcE7XDX9qYU/wVwtTfJ0LOVWPfu4IljLSw7SE08uwMIeDhMGGGTRQdK6Cavk7bd7eDxh8OJnqBxcdbBgwPzaa4Piqbo4H52YBv2oCqX/8D7NjkeF5uq6eBe37gZDTaratMBvJhbwbLZXFTwPzvlRfNjtQUPy9WqLLcAlmVTFNvw6GNRlL8BvOzA1lg4JU4AAAAASUVORK5CYII=); }
+#etank::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAHlBMVEVHcExgKAC4cAD4+PhwgJAYKEAAAABQWGj4sACoyNCdnaskAAAAAXRSTlMAQObYZgAAAJBJREFUKM+V0FERxDAIBFAsnIVawAIW1kIsYCEWcNslzTWXlp/bjwzzZsIAIgJ8ZgDJPAGOY4ZlAfAEZdqR9RvcDb1rYzrMvYCIAezZEVGBKnT0jCwq4JeIbGpx99jBbDU1q+AaLLtuky64lsvJt21/gNK+J2zzYg/gkVekhKT11sCB77cAcBwzVS7m49ffcAJ6V41RJAPATgAAAABJRU5ErkJggg==); }
+#grapple::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAG1BMVEVHcExzgpRSWWv/+/8YKEL/sgC9cQCty9ZjKADlPNo4AAAAAXRSTlMAQObYZgAAAH5JREFUKM91z4ENwyAMBMCs8Ct4hV/hV/AKWYEVMnaNS5OKfi2BzckWcBwmRH0lA2K8IZbsoIHKmgtDFlDQ2pUDzro30EIQoY4Aw8JASY0EMCwIs529r3fs0G1S32hh/Rz3wcJn5A/oGZGH1B1pQdeZSTIzz0sG6vzAlB/Y4wVw3ku1I8Ht+gAAAABJRU5ErkJggg==); }
+#gravity::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAHlBMVEVHcEwwICgAAADYqLhgKAD4+Pi4cABwSFD4sACYaHi3HKZ8AAAAAXRSTlMAQObYZgAAAGVJREFUKM+N0WEJADEIBeBVsIIVrGCFV2EVrGAF255wsN2Bw/lH+ODJpmNcFJGFABJGdIJdNQgz65yaTU6g0wFPquFNuK9MBStSA74RVNDP6N/R/+ViH/1O+7skmUWY0T7mH5oZDwSAXT3Gf5NzAAAAAElFTkSuQmCC); }
+#hijump::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAD1BMVEVHcExgKAC4cAD4sAD4+Piln1njAAAAAXRSTlMAQObYZgAAAHtJREFUKM910YsNwCAIBFBWuBVuhVuB/Wcqn37SFkiM+hIB1cwMEXbO9+INIkAyB0cweAkkbdCHEjBDpM1DAdygJSvbDrG/Op8h95S7bxCi6hw7ZOd8kn4BVbMuOELcyl1FI9T7VoCej/yFblgZsdQEd7C/8g+d7yr3hwMhBS0Hv9Sw1gAAAABJRU5ErkJggg==); }
+#ice::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAIVBMVEVHcEyQqOA4cOBwgJAYKEBQWGioyNCQkJD4+PgAAAAYQJjsT9/1AAAAAXRSTlMAQObYZgAAAJhJREFUKM990EEVxCAMBNBYiAUsjIWxEAtYqIVYWAtVuQksPUC63OY/SiYVyUNS5GqtXSIVkNYRWW+dskFEGkya6ke1nWDdnGZ8h24x8y9ksoQ19gBHPBuTn+oHRKl8F7LOAQ6G5LNjeAFxe1ZLkgpic47AmU/I2wCeLwqI7D7FUMFYHtE//zV7BRhzs578emxAeK5vvmSHL2Fuc40q5c8iAAAAAElFTkSuQmCC); }
+#kraid::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAKlBMVEVHcEy4yHiAsGhImFgYAAAwaDj44JBAgEgoSCAoMBBoACCwADD4+PjoYKiiPUZ7AAAAAXRSTlMAQObYZgAAAaZJREFUKM810T1v00AYB3A3FJBges7iKFIXn1tFVAzYjpulQ5McbxVLhU8x41XRTTDU9GR1pKTgjHabNh4RFcN9hGZDFV8iX4bHL3j7/6Tz8/zvLKv+2PYP1h8nQmdNvtePi+B0HsbncQvpONeiCIU4b6CTfsx1nAdClw1QgI0zMSMsbY/QIwZZmC1s3QIEgb8RZYsibKfQ3oEZQjeb60Wd19iBMQNwZ/OTbzU8pEvzGziblmm/OfJ49dOYGzbKSv8/mCVCGBfQwKPbT6vbX244c1QD1tfPKzPsRQP6tIXtneVNoDmosxaiHeN1I7iSh5b1YB/L6WnODp3NCae41Uu8Hx1di5y8PyIInWeWlYnpdeG4/LWspsj9juYXfrLJlVJQN+vG3AP8gwIgCN/dV9mF99zZQ2BVl/tbb0vmvLgc3Sn2JUAoOfcdsjcKSmCJi5C+ORFA+K5SxEu6CKcl8e2eUtIeA1RdHLDfcRwJ4TGFpHrGgX3ncyWffABp4x7rfDLBSAKHSrUr8Rm94R+mqkxpvekaqL8KXAESN5dYzkOX7jGro2L/AAORemU49An6AAAAAElFTkSuQmCC); }
+#missile::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAG1BMVEVHcEyAgHgoKCj4+Pi4yLjYOJC4cABgWFD4sABcn1dPAAAAAXRSTlMAQObYZgAAAHpJREFUKM+l0dEJwCAMBFBXuBVuhaxwK3QFV+gKHbsXKwjV+tMgmjyIiCklgxESy4gXuKRj0BvosrTVZYLwwePIXUtwh+tIeXom6B2jZw31qnUPinbhBghwDwjhH/iHzpOMDcAPA/QJVAOPYQ3KIQH5dp8rcKoeTme4ARW1PrHn0KwNAAAAAElFTkSuQmCC); }
+#morph::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAElBMVEVHcEwAKIzO6/+tKJQAAADOogDttKFKAAAAAXRSTlMAQObYZgAAAIRJREFUKM+N0eEJgCAQBeBqgjQHSKEB4uUAohPY/rt0KoGVpu+fHzw8z2EoZeSKIuca0FEyCr/pDSOno3DOEEX5wCSZMAuwC8P4WgBqCAt9AjhM6HxgklTQfjtjiTolsNorFeSoAlLlD9K1dQiDh2Rz5JBGB15vyaC9j46dtv+l42+fuQDt6zotpA+XzgAAAABJRU5ErkJggg==); }
+#pb::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAElBMVEVHcExgKAAYGDD4sAD4+Pi4cABBTEiFAAAAAXRSTlMAQObYZgAAAGlJREFUKM+dkdsNgDAIRVnhrsAKrMAK7r+KF6tJkVBN+ejjpIcSENkNZawAb2YzegMFQuHaAAXfu9O6SQWHR0Y1bgsQSg9gQ0m/JMCaonQ8xVeAy6CDDvAYik05Mvjux4+eDlYmtT1kOQE7ayW5vog1/QAAAABJRU5ErkJggg==); }
+#phantoon::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAMFBMVEVHcExaWSGEgkJCQQgYGAAxMACtqnPe24xSAACtqmulADFraTFKSRDvAHOUklr/+/9whDcVAAAAAXRSTlMAQObYZgAAAZ1JREFUKM8tkL1u1EAQgKdw+qzXPuq98zltnNmlPntnkQAhndmdKEpnJ0oiXgClpAABUupIiRANkXgApBBqJJo8An1eI3O5m2Y0n7752QVsGpWr/HScSjTaAcdGSZyORoB2DCHmulfqYVRT3WgmCIix0XpnQK1ZOwKP0oS4M0SMMboEgZmj49owIrMYIUVBXM9YsgsLyCgyRVXP0ZIIK8Ac9sZn5qQUkQCAAsV6KocNiUhAJqkZXG762hIFMbwLz+cYks019UkMnzdTrNWRacemXA11LtfdGR8YUZITUCZOk4tXPz4fyZJyIYcl64//313TPvnIC/DWzduvL88v/3x02Gpp8fKai9vvd1c/S2tXQ40P7dntry/fPulAg6zNqkod/Lu+/P3Bp04M8F0R3r1+f/73LVW4K5cuZlid0P39m6GyPoNVUDG5uTncLyzBOuJeb0yuiqJY19kLb5G8I70B1GJPk5m3Xb98AuKSKjpNyMdPQH4oiEGJtrtNDxCnQJTtbrYkyMKklIcuN2AJGdaD/E1Y11tL2IpEArxUj5POcMf229ZbAAAAAElFTkSuQmCC); }
+#plasma::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAHlBMVEVHcEwACEIpGGsYmjlrOKUAAAAAQQBa2xDO6/+ccdYsUZInAAAAAXRSTlMAQObYZgAAAJpJREFUKM910W0RBCEIBmAqvBWoQAUqWMEKVqCCbQ/Qnbs5WH4tj6N8LFEGmGiKyCTqAWyejzEe+QOwbpDYWGtIBzCAHZZfmR0wPD+wljTgCasqoqzDrBCZx7f1Av7NSLhRgb2x0CyvVgHmzTvozvqoENOdd7fdvIDnMV60h1h2A7GfKMkxaAdJ9yZe4PwLzsffALxjS7/nD3wAvX9PbXLhmUgAAAAASUVORK5CYII=); }
+#reserve::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAFVBMVEVHcEyYmLAYGDD4+PhoaIBAQFgAAAACZ4TIAAAAAXRSTlMAQObYZgAAAG1JREFUKM+V0NEJwDAIBFBXyAq3giu4wq3Q/UfoNVgaUov0PoI8SKKaGZbYlR1AMKOyAHAFyQvIQGQQZAFjYGRUVOAOz6iooH8j1m+jgrbTflrJccORG9ug3/qk56xBDSuMD4DaiXDXYJy3fsMJiyFgbXJJm9oAAAAASUVORK5CYII=); }
+#ridley::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAJFBMVEVHcEw4EChYMEiAWGgYAAjQqKiogJhAGDCQaICoOAD4wADQcABA7jIRAAAAAXRSTlMAQObYZgAAAWRJREFUKM9FkTFTwkAQhXfCObQGT2co2dtkLCVHwDK3rGCLJhR2Boytowi9+gdore1s/YEekuDNFbdv3vt2Zw+gOe2XtDKF1NUTtC/TAtMy29fBarq+teloTbUhoOfUVKP5oEkE5TRF+5roBhjMy3O7qXpSI6BVFEVVatfUECdoFyT6ohEiLR3RrkFCa/H5JeL6h8TR7O7HmfyAhKj/vfWOeSMEtuusE/qf4qYr0n8fzxvBzLZmoU/k0CQlCYvxUmeqhgzp5H4goc6crhHilqETnenBn4Dkhq7nHSzLPdOZGZMgXcs+EnHsUDvknPV+F5hr7Q1EH7Jr3cqxl0ho+M1LOyFaJrcoPJwwi556Ie74rOLZhBAZGVRkpZ9JPChX9MHMECRWCOQUH0WMIQGMHpJj8O9MXZdxYWEcl/67xHZAGeJqBOYs92TVI1A4yXkD5uFq13yagfJk2cC4pN1ylb+yQEp+Ab2kUL5FZ1qeAAAAAElFTkSuQmCC); }
+#screw::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAGFBMVEVHcExzSVL/+/8xICm9cQD/sgCcaXveqr2L4WKOAAAAAXRSTlMAQObYZgAAAKtJREFUKM990cEKgzAMANBi8QNcQa9batnVGNju0t1H8Qsc+AEe9PeXopNRs+WWR0rSRCk5NFHzDzRhURhq8nCWQWO1zOM4gHsqETSe4LpM4IJtRNB0nwCgfgS79j4CVlzec45GBE23wfXed3YdToRXW3sfn/wCLHcRgduW4yYXs86RAqFp42Cw/yUBFs47TtFs+0hBZS6W81ifS6SQb+l+qhSyuPzvUx4giTcK0UN5xH7JJAAAAABJRU5ErkJggg==); }
+#spacejump::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAG1BMVEVHcExjKADeOJQ5GClrKFr/+///sgDWedalSZTJG5klAAAAAXRSTlMAQObYZgAAAHxJREFUKM+VzoEJxSAMhOGscCvcCq6QFbJCVnAFx+5ZoRSaPHiC4P9BVAPstVRfCD4ERgHGyENgBq0ApIQA1YkKjHmndtJKgM57TIIajPpQhIZoDezrztMdbOG7v2DnY9bDlKhnD34fp/cwfI2xfPwAiboDla8ZMZcf+xsuUaI/n2+V8kwAAAAASUVORK5CYII=); }
+#spazer::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAG1BMVEVHcEwYGDBoaIBAQFi4cAD4+PhgKAAAAAD4sAAqjsoJAAAAAXRSTlMAQObYZgAAAJlJREFUKM9t0dENwCAIBFBWuBVYgRVYwRVcgRUcu4e0/RBNasILJ8aK5IKpyHT3KXID2FBjvSJKDmA7a4iPoHmHrMEEYcW8QdUgrOVxB+iG6cFTZwfOZE34rt5BP3hXA8vauI8328ESKod8qAb7dZjB/hQdBHVYJnSPbyDVD4y/5YDcc3BG+BQ3GJbd9TNgFxALRiIvvu91wgNjvFGvUTsIiQAAAABJRU5ErkJggg==); }
+#speed::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAG1BMVEVHcEyYaHhwSFAwICiI6BAAAAAoOIjYqLj4+PhULSIDAAAAAXRSTlMAQObYZgAAAH1JREFUKM+F0dENgCAMRVFWeCt0ha7ACqzACl2hY1sKGo2PwJf3xAqRUgSAmbtZPEgpPxDR1xIhoPE22li9d+UwO7JSgGaPrDECBlgZ3ThkejYF05Hu2U2NQHwuMibaBqC5ZV0jYDDOdcsOFj1H/4IkTFq/cANJHI43d7z9CxRSj08pnlpPAAAAAElFTkSuQmCC); }
+#springball::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAG1BMVEVHcExjKABrKFq9cQD/sgA5GCmlSZT/+//WedbaTLkDAAAAAXRSTlMAQObYZgAAAJtJREFUKM9jYAABRkEgEGBAAHQBRkFhY2NDJBF0ASDfxMXFGSGCKQDku5cARfAJuJeXl+AXwG8GkyLMWiEFrAJMqgEwp7MGKWATYA3SaIB4n6NJNQCbAANraFhaRntFW1pqKJiPKcCkpKQaCgRBSkoK2AUIm8EaBNOiikOAgTUsLS29LC0tFcrHIhAE0aKKUwAoopZeloTgowgAANixSy0e7wyvAAAAAElFTkSuQmCC); }
+#super::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAElBMVEVHcEyYmLAYGDD4+PhoaICI6BAG7ixbAAAAAXRSTlMAQObYZgAAAHFJREFUKM+d0cENxSAMA9Cs4BW8gldghb//KjWkh980tFJ9gTwpEEREBCkJABmZCi65YmqBLuPnuHVJB66lKT24jjzUKzbAAQiDD3BmC1S2ePcZfK1lXOYo8P6WObvGFlBberi1/AFLGphjQ/nda/wCByEnOenJSW8CAAAAAElFTkSuQmCC); }
+#varia::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAHlBMVEVHcEzYOJAYGDD4+PhoaIBgKAAAAAD4sABAQFiYmLC52KPHAAAAAXRSTlMAQObYZgAAAIhJREFUKM+d0dENwyAMBFCv4BVuhVvhVvAKrNAVWCHb9hxVUas6H60/AD9hgSHij4AOeoSXEiYQIKIK2AuaYaHINK3FCWKjMsXMcu0I0fCwlKgRzpwt7xu+wCEWZghkiwsYN7Bd45up7kBu7swBjuD2l5zDMziDu2Y/7waOCfob9Drv+pcP+DmeruBIYzsfmq0AAAAASUVORK5CYII=); }
+#wave::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAHlBMVEVHcEyYaHhwSFAwICjYOJCwADAAAAD4+PjgqODYqLgqJCTOAAAAAXRSTlMAQObYZgAAAJJJREFUKM9t0QENxTAIBFAsYAELWMBCLdQCFmphbnew/Z8lHMua9iW0100E5W4qsiJiiTBwM3Ws85xHJrgCYuc+Owi4GnoKDodav7DwMDBPvHVsdSwK1eH/6AMMuyKXya8mYJ3ah1dC5YCZagfEJQdg6Mt1YUpBrcNptRiF6ysTStIeQSWBz7b9wwjUd36DucuAG8m5VjNc+uwOAAAAAElFTkSuQmCC); }
+#xray::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAHlBMVEVHcEwYGDEAQf9CQVoQIFJraYQpMGucmrX/+/+ly//bz71ZAAAAAXRSTlMAQObYZgAAAGRJREFUKM+Fy0ENACEMRFEs1EItYKEWaqEWsICFut1uCAk0A8xtXvJLOYz5ASzCDzC7A4v71gCwvckQ392WBkAkcgGi2npvlegMcweIQv9EZwMgNRmimMloEOgAxUBpENYEQN4Hm00+KXNSqdYAAAAASUVORK5CYII=); }
+#gravboots::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgAgMAAAAOFJJnAAAADFBMVEVHcEyUrec5c+cYQpyU7BAZAAAAAXRSTlMAQObYZgAAAGpJREFUGNNVz7EJBUEIBFA7sDoTk6tuE5NpbRMTk/l+Dm5dQXgDKiii3N2UAWcgYkASBfMJOmHPhBpomJD0in0D4I2qMrugK9/1g0rsCS0WMaBpzhrQigisOOjrZs/yA/4L/fKHnu0U+PAD2NCH+z2VeO0AAAAASUVORK5CYII=); }
+#metroidsuit::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAG1BMVEVHcExKrTkpUgCca3verb1zSlKM7xAxISn///8JPeYcAAAAAXRSTlMAQObYZgAAAIpJREFUKM910YENAyEIBVBXYAVW+CuwAiu4Ais4dgV6NbW/Jprj5cA7GCOXwww+zvoG7MjW2gdAAS6qojL3dlDIR03bm4Ll+x2qGocuWCcH6YIn5QdmS5XloF21kENeuGZ/GYcnJc8/8Nz5SbngNEjujr3B0b9WHXQG4TmpHBTgwWBE5Kxz2lHxBS8SwU7lYCa2UAAAAABJRU5ErkJggg==); }
+#hypercharge::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAHlBMVEVHcExzSlKca3sxISnerb1jKQD/tQD///+9cwApWtbdiSGCAAAAAXRSTlMAQObYZgAAAINJREFUKM+d0VENxDAIBmAsYOG3gAUsYAELtYCFuh1sa3K3sVtyPLVfCAQgYgCqY6jmg4luwCwfwdyAZDboDOlBEWFmTwBReCwRdAB3r/SSHqj+c6b0oFLpc4y5t9V/IItWtSqaxY8uDeyD+Q9IMYtwaoHlGCw3sDbWwteSr/B6udfrbzJRWR9pRHCeAAAAAElFTkSuQmCC); }
+#darkvisor::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAACXBIWXMAAC4jAAAuIwF4pT92AAAAG1BMVEVHcExKrTmM7xApUgCca3verb1zSlIxISn///9Cj62iAAAAAXRSTlMAQObYZgAAAIFJREFUKM910AENhUAMA9BZOAuzUAu1MAtYmAVk/x7LTyCUhcD6coWECDu1h9/ASpBI9gco54pY+ZcXFLFy6VLPAitCoqy9HRSAQKZuAC3s110VLR5So9PYz7IwhSlZYLc+pwG6aeE4yOsX7s3BxPMcctD3SjuQcCqc/IaRW37DY35AyFy1np6zyQAAAABJRU5ErkJggg==); }
+#sporespawn::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAGXRFWHRDb21tZW50AENyZWF0ZWQgd2l0aCBHSU1QV4EOFwAAAAlwSFlzAAAKjAAACowBvcbP2AAAADBQTFRFR3BMWIE/gKluuNF4MFggEDgAABgAaZFXRk8RVWQkhIZFa2wtocVwj7trMFgV8PCWdVNGRwAAAAF0Uk5TAEDm2GYAAAHBSURBVCjPFZKxjhMxEIan4FKfEztpsXf3roEmm0BzCOyMd6FjI89eG0XZ7ROIED3FRifRkigSD7B5gSNXXgsVxTVcT88LMPnk6tc/9j8zBoAZ1GXN+Bo6AJBB1glTTxjGF7OyU8O8KspQKYtB+dBfvIGzeK6kD5FW1roSuT5bjBIa93RsnS6pAlWWk8K6rpbSqbrO4AKrMBikQ6Pl2leyD0pbki5NUyMCFp8cKMzXxUnQS8wVFXAZuyGKKDWxzI2gMRC6l15YITBmYRqAAjInAVFIIlgTCvMsPd2qOWAOiN37X1ow3T9X+ruHyIi3zc3x9b/DbfNFmCG8a27u2vZ4OB7a9u622UHTbPa7/e4Hn91+2zTw/PPfhi33V2xovn57ANE1j2K7advtRjzyQ+CDNemrn8zv9EFy9LUPyC6Gs1FxDVImgU5xPZF3AWE9Ue5kiWJZqG4iIE5CbJeRSYcDr0jFIDWhXUXcyyVi+OAABVq5Mqx8XHK/AjJEfT1YDSMTo1CUQR0Km+XLyYhnaj3VcKYKVaJ0XURyfV7Uk2yaVTlGI0wy7BczCDNRTRPsJb5H9YvqHN7DOS+c5p4WT4E/xH8DrpAqXtNzDAAAAABJRU5ErkJggg==); }
+#goldentorizo::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAGXRFWHRDb21tZW50AENyZWF0ZWQgd2l0aCBHSU1QV4EOFwAAAAlwSFlzAAAKjAAACowBvcbP2AAAADBQTFRFR3BMAAAAkHgAsJgAQCgAGA8A0Mgq8OiQaFAAyKgIAIhQoIAAAMScAEiwAPjgAPj406DzzQAAAAF0Uk5TAEDm2GYAAAE2SURBVCjPTdAxTsMwFAbgRAkgMcWxlYUlcZwIRjtpUkYnKSotQxPiLkylUIqY2iIEF4AZJA7QHTFxAVbEFXoFTsAAFSTx2/zp6T2/X1HWpe5RoUilJol1E0pg0Q7mQuoZo9JD+Kx+6yEmJQbAqEBzV3mJzIjW0Pte0ohlQQWb2YrCiztS2FUHx8XhJI7n1ZAt5qKUEMDqfzETmm5Aeb2XzXzHAZZdgxb6WIj9QfNVXPCsy23pumyJMQINbIh3/xSOGtBfPh6u05kUwNEXpABLsP2K+DOTQP8cnpMDaa/SO26VLVuONXByX+64X+QBlECPGFwQCcx2CShrQMUe2aWXDZT4JBnfxnZzCnlz+WT4WAEUqB8acfepSt0TO32uwNH0fyL03KuOoeht82+qZg5Evg4nnf7CDwtrOeoAIQpOAAAAAElFTkSuQmCC); }
+#crocomire::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAGXRFWHRDb21tZW50AENyZWF0ZWQgd2l0aCBHSU1QV4EOFwAAAAlwSFlzAAALEwAACxMBAJqcGAAAADBQTFRFZxkPR3BMoiEQriUQeB0Q7y0Q5igP7mwWu45y4rSc69fP3Hg5AAAAOBAIWDAYiFdA6MFJNwAAAAx0Uk5T/gD9/v7+/v79/v79bfI5FgAAAXxJREFUKM9jEEQDDHCWzEFUgbPXTC4eRBK4m1pqGuaDEDiiFBxqrFp6ECZwKNzo3gET43BDqIBQWeyBV3+OuZU7QgRkU+9w/HnZo6xuAjFDxv1C5/055x4oKJsmggUOJfW9P3OIyYVBxVwHLMDDc+aCmgtzqa4yswFY4C7vmTN37xwI5lVjgBgqcFDmLkNagC2TqS4j1Fq5PxdyDXRLXHPVYQIz/zApKTkYOyhBBW6sfKZqosAWzMQEFXj5n4Ep1IE31OAi1KUr/pqGXUlSc/GFGiox40Npbbma7zVfiEsFT6x4ZBpryut7iReq5X7/hVAb3QtMLBegAfRq/WPncPW7DAyXoAK/Op5cieU9y+ByByrw4t8FFZvkQ8kOsEC+Y3yGR4nhjEsRI1RAyjjmuu+BEvcEE2ggy55xNjjAc9T5HHMOUOCvWsrdYt9z//gOH77/8kvKIYamu0qhDu/u3j3Eo/xQ5l3/PIbe8396D8rInP/n5PYCNbIxYh8KALlLlDFDCYXuAAAAAElFTkSuQmCC); }
+#poweroff::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAMFBMVEVHcEweEBA3JyhwGACQgIDw0NAGBgUoUABIqDiAKAD4kADZaQCI6BAgKCj4+PhA+DA/+jUEAAAAAXRSTlMAQObYZgAAAVRJREFUKM9NkL9OAkEQxhcTQ2XCLnrakDiTFWqyFbEwR+7slyD9URBLaMTiCqykwMrKs7jCCizpuAegoaGRyoIX4Bmc3VvASe6y88t83/xhzERxslq9smMUJ0Osxf9IPPDGL+u4fwDLX5K8bZYH0H8e9x7Hg/iQs6HXizZPV3vN6KTy04vW4nKU52cjqFDF2qs5IDjKsPMQIIiSAxSe+TmAKG2FBLw2+WnzCEIDCnwvIa2VXGBbyg59rZvcg+N5DjgYQJXkIe8DKavIeYkBAIK1EUhvYD6A4MoERw7gM9/3RXmn7pSqI6eEaQsa6UcONNO6JcoqSZP3OgqtNdtasEiTuQVbB2Zp8uWAlTS+1e3USaxp4zvLps7UtlWL2Wzu2tJwBD6zjLpwM6kZfT+pHZ2WwGpkLtK1O5kLYSTDXbvpIeRXL9DWfGcqHaBX0OZhAF26BvsDVTpnuplGYLQAAAAASUVORK5CYII=); }
+#crashed::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAJ1BMVEUgICBwcHBAQEAAAAAAAICgoKAAALiQqOA4cOD4+PiQAADIAAD4WDBumharAAABMElEQVQoz2WQsW7CMBCGrw5d6BKo2O2LuiOZIsZKPRGpZTBFPEFQwtAZP0AkmpGVHalDV6aqj9CH6p3jwNCTnNhf7v/vj8FKTT+834edhfZc0rzaX0FV2KaWZwd2liX1dHcBxbaxs6aoOlDYUoyKWRFBPQl2k2ndged24jwCBWhGq/UAM5VEwJXIigDRhA6TYSbgcXgFIwFjuEgAguQWl8asZD20HoA3LUi0AADFHuZ+YNhDZFpr1MFGIe81pForoK8TESB/TSFNU9U7lq+5f0I5gAug2ZzyABw496b6W78/c4dyzsGBwR0D6WBwCKA/bzafPoIgofdfyqMkmJ7ph3w0DWNfvheUx7EcTvWIKOSQpBIdSAra6FzXf5GXtWPEwfq4HCLq9tb/Ae6NAPiC/gC+nmVXelxbsgAAAABJRU5ErkJggg==); }
+#torizoclawx::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAJ1BMVEVHcEwQWQAQrgBCORAZEABrYSEI7wDm31oAAACtpkL/563/9+YxACkkem3uAAAAAXRSTlMAQObYZgAAANpJREFUKM9jYBhIwCh4UACZLygoeFBQEEleaJGQkJIgQg2j1ColISUlhICg0CJFJSUlQSQjlBSV1JIUkVQoKQqlpSEEZA4qKakJIqk4aKSklpYWJAoXYHZSSktLKZaGC7A7AgVUNpvDBbgdgXaYbraEC4SHCCopeRaHwgVYg11MXSKnInnOOdhliqkDhG0AIlwsK4NdoJLGzsbOJiHOoSYGUIHQ8urtpcEuLs5w7aGhIS5ABXDzjE1Dy0NaGxAWhAZbulg0I9no6RLaYYAcvq3Nwc0oEdCMKo8JAEMQLES4724dAAAAAElFTkSuQmCC); }
+#torizoclaw::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAJFBMVEVHcEwQWQBCORAI7wAQrgAZEABrYSGtpkL/563m31oxACn/9+ZSKlAAAAAAAXRSTlMAQObYZgAAAJtJREFUKM910QENhCEIBWAqvApUsAIVqEAFKljBClaw3CH+t9udHE63902Ym0S7AEyAPvUNyJp5lgBIF8QSOVJA710S4iwA2fLkaCoh58VubfdUcO5GDqlgzjOwAaflFyY44y4T2A3E+s46GKuAoTgguphHAUufZ7MF+A02TM/r1Qeb3UBmrMqmau62v+ECihTkG+kPKPvwjVTBCzi2bwlUwCCiAAAAAElFTkSuQmCC); }
+#damageamps::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAGFBMVEVHcEy9cwCca3sxISnerb1jKQD/tQBzSlISBOSKAAAAAXRSTlMAQObYZgAAAHFJREFUKM+d0dENwCAIBFBWcAVWuBVYgRVcgfV72DZtWoxN78PIS4iKIiKAmakqABl5AkuMJFUAu1p1Blzdc1tD1j6SMgH3xlDm0FrvlCmwozPs+Q/rUz7cdP3ac0A17BM8kjN8g+KWqCCC/2z7d0cBGyAnUwPYmnegAAAAAElFTkSuQmCC); }
+#accelcharges::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAGFBMVEVHcEyM7xD///9zSlIpWtaca3sxISnerb3qRkx0AAAAAXRSTlMAQObYZgAAAG5JREFUKM+d0ckNACEIBVBasAVaoAVaoIXfAu0PLgcXjMlw8r+YKEAkZubO7B4HITpABFOJJIC4bTQKOdSsegVDZNVSGsEyiFxa6Q2oAvMVHD13gf+B9ysDjo+tsDW3gaBNZp5YDvOQd3hu7rn9D96zZM+Z2MS7AAAAAElFTkSuQmCC); }
+#jumpboosts::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAGFBMVEVHcExKrTmM7xD///9zSlIxISmca3verb2pEPh5AAAAAXRSTlMAQObYZgAAAHdJREFUKM+dzssNwCAMA9Cs4BWygldgBVZgBdavQz+qRNJDkRDxkwwYYK+ltAP9ITgTMOdFiMkSAHU64MrR2EGdFbVXIwFojpoEOZjHg3GxWwG4ARWE+DvvYOfHrAZKlFnDWCNHDW3M1uZoHyBRrqD3yGRI73/gAAQUN+vIybOFAAAAAElFTkSuQmCC); }
+    </style>
+    <script>
+var socket;
+var state;
+var refresh_delay = 1000;
+var reconnect_interval = 10000;
+
+var subversion = 1;
+
+function set_status(status) {
+  document.getElementById('status').textContent = status;
+}
+
+function show(elem) {
+  elem.classList.remove('hidden');
+}
+
+function hide(elem) {
+  elem.classList.add('hidden');
+}
+
+function update(updates) {
+  // console.log(updates);
+  for (var id in updates) {
+    var elem = document.getElementById(id);
+    var cls = "collected";
+    if (elem) {
+      var done = updates[id];
+      if (done) {
+        // console.log("Add " + cls);
+        // console.log(elem);
+        elem.classList.add(cls);
+      } else {
+        // console.log("Remove " + cls);
+        // console.log(elem);
+        elem.classList.remove(cls);
+      }
+    } else {
+      // console.log("Could not find element: #" + id);
+    }
+  }
+}
+
+function update_location(s) {
+  // console.log('update_location', s);
+  var room_id = s[0x0C] << 8 | s[0x0B];
+  var region_id = s[0x10] << 8 | s[0x0F];
+
+  document.getElementById('region_id').textContent = "0x" + region_id.toString(16);
+}
+
+function update_items_and_beams(s) {
+  var items = s[0x01] << 8 | s[0x00];
+  var beams = s[0x05] << 8 | s[0x04];
+  var amps = s[0x35] << 8 | s[0x34];
+  var boosts = s[0x27] << 8 | s[0x26];
+
+  document.getElementById('items').textContent = "0x" + items.toString(16);
+  document.getElementById('beams').textContent = "0x" + beams.toString(16);
+
+  var items = {
+    varia:         (items    &        0x00000001) != 0,
+    springball:    (items    &        0x00000002) != 0,
+    morph:         (items    &        0x00000004) != 0,
+    screw:         (items    &        0x00000008) != 0,
+    metroidsuit:   (items    &        0x00000010) != 0,
+    gravity:       (items    &        0x00000020) != 0,
+    hijump:        (items    &        0x00000100) != 0,
+    spacejump:     (items    &        0x00000200) != 0,
+    gravboots:     (items    &        0x00000400) != 0,
+    darkvisor:     (items    &        0x00000800) != 0,
+    bombs:         (items    &        0x00001000) != 0,
+    speed:         (items    &        0x00002000) != 0,
+    grapple:       (items    &        0x00004000) != 0,
+    xray:          (items    &        0x00080000) != 0,
+    damageamps:    (amps > 0),
+    jumpboosts:    (boosts > 0),
+  };
+  update(items);
+
+  var beams = {
+    hypercharge:   (beams    &        0x00002000) != 0,
+    charge:        (beams    &        0x00001000) != 0,
+    wave:          (beams    &        0x00000001) != 0,
+    ice:           (beams    &        0x00000002) != 0,
+    spazer:        (beams    &        0x00000004) != 0,
+    plasma:        (beams    &        0x00000008) != 0,
+  };
+  update(beams);
+
+  document.getElementById('damageamps').textContent = amps;
+  document.getElementById('jumpboosts').textContent = boosts;
+}
+
+function update_events_and_bosses(s) {
+  // console.log('events and bosses:', s);
+  update_events(s.slice(0, 8));
+  update_bosses(s.slice(8, 16));
+  update_accel_charges(s.slice(0x20, 0x22));
+}
+
+function update_events(s) {
+  var bitmask1 = ( s[0x07] << 24 ) |
+                 ( s[0x06] << 16 ) |
+                 ( s[0x05] <<  8 ) |
+                 ( s[0x04] <<  0 ) ;
+  var bitmask2 = ( s[0x03] << 24 ) | // -2084372479 ???
+                 ( s[0x02] << 16 ) |
+                 ( s[0x01] <<  8 ) |
+                 ( s[0x00] <<  0 ) ;
+
+  bitmask1 = bitmask1 >>> 0;
+  bitmask2 = bitmask2 >>> 0;
+
+  // console.log(bitmask1, bitmask2);
+
+  document.getElementById('events').textContent =
+    "0x" + bitmask1.toString(16) + " " +
+    "0x" + bitmask2.toString(16);
+
+  var updates = {
+    poweroff:   (bitmask2 & 0x80000000) != 0,
+    torizoclaw: (bitmask2 & 0x00100000) != 0,
+  };
+
+  document.getElementById('power_off').textContent = updates['power_off'];
+
+  update(updates);
+}
+
+function update_bosses(s) {
+  if (subversion) {
+    update_subversion_bosses(s);
+  } else {
+    update_vanilla_bosses(s);
+  }
+}
+
+function update_subversion_bosses(s) {
+  var bitmask0 = ( s[0x0B] << 24 ) |
+                 ( s[0x0A] << 16 ) |
+                 ( s[0x09] <<  8 ) |
+                 ( s[0x08] <<  0 ) ;
+  var bitmask1 = ( s[0x07] << 24 ) |
+                 ( s[0x06] << 16 ) |
+                 ( s[0x05] <<  8 ) |
+                 ( s[0x04] <<  0 ) ;
+  var bitmask2 = ( s[0x03] << 24 ) |
+                 ( s[0x02] << 16 ) |
+                 ( s[0x01] <<  8 ) |
+                 ( s[0x00] <<  0 ) ;
+
+  document.getElementById('bosses').textContent =
+    "0x" + bitmask0.toString(16) + " " +
+    "0x" + bitmask1.toString(16) + bitmask2.toString(16);
+
+  var updates = { //             TTMM   WWNNBBCC
+    bombtorizo:    (bitmask2 &        0x00000004) != 0,
+    kraid:         (bitmask2 &        0x00000100) != 0,
+    sporespawn:    (bitmask2 &        0x00000200) != 0,
+    ridley:        (bitmask2 &        0x00010000) != 0,
+    crocomire:     (bitmask2 &        0x00020000) != 0,
+    goldentorizo:  (bitmask2 &        0x00040000) != 0,
+    phantoon:      (bitmask2 &        0x01000000) != 0,
+    draygon:       (bitmask1 & 0x0001           ) != 0,
+    botwoon:       (bitmask1 & 0x0002           ) != 0,
+    motherbrain:   (bitmask1 & 0x0200           ) != 0,
+  }
+
+  update(updates);
+}
+
+function update_vanilla_bosses(s) {
+  var bitmask1 = ( s[0x07] << 24 ) |
+                 ( s[0x06] << 16 ) |
+                 ( s[0x05] <<  8 ) |
+                 ( s[0x04] <<  0 ) ;
+  var bitmask2 = ( s[0x03] << 24 ) |
+                 ( s[0x02] << 16 ) |
+                 ( s[0x01] <<  8 ) |
+                 ( s[0x00] <<  0 ) ;
+
+  document.getElementById('bosses').textContent =
+    "0x" + bitmask1.toString(16) + bitmask2.toString(16);
+
+  var updates = { //             TTMM   WWNNBBCC
+    bombtorizo:    (bitmask2 &        0x00000004) != 0,
+    kraid:         (bitmask2 &        0x00000100) != 0,
+    sporespawn:    (bitmask2 &        0x00000200) != 0,
+    ridley:        (bitmask2 &        0x00010000) != 0,
+    crocomire:     (bitmask2 &        0x00020000) != 0,
+    goldentorizo:  (bitmask2 &        0x00040000) != 0,
+    phantoon:      (bitmask2 &        0x01000000) != 0,
+    draygon:       (bitmask1 & 0x0001           ) != 0,
+    botwoon:       (bitmask1 & 0x0002           ) != 0,
+    motherbrain:   (bitmask1 & 0x0200           ) != 0,
+  }
+
+  update(updates);
+}
+
+function update_accel_charges(s) {
+  var accels = s[0x01] << 8 | s[0x00];
+
+  var items = {
+    accelcharges: (accels > 0),
+  };
+  update(items);
+
+  document.getElementById('accelcharges').textContent = accels;
+}
+
+function readAsArrayBuffer(data, cb) {
+  reader = new FileReader();
+  reader.onload = function() {
+    // console.log(reader.result);
+    cb(reader.result);
+  }
+  reader.readAsArrayBuffer(data);
+}
+
+function readAsUint8Array(data, cb) {
+  readAsArrayBuffer(data, function(ab) {
+    var a = new Uint8Array(ab);
+    cb(a);
+  });
+}
+
+function send(data, newState) {
+  socket.send(JSON.stringify(data));
+}
+
+function onSocketOpen() {
+  set_status('Connected');
+
+  hide(document.getElementById('config'));
+  show(document.getElementById('itemgrid'));
+
+  if (document.getElementById('enable-debug').checked) {
+    show(document.getElementById('debug'));
+  }
+
+  state = "devicelist";
+  send({ "Opcode": "Name", "Space": "SNES", "Operands": [ "Item Tracker" ] });
+  send({ "Opcode": "DeviceList", "Space": "SNES", "Operands": [ ] });
+}
+
+function onSocketClose() {
+  set_status('Not Connected');
+  setTimeout(function() { connect() }, reconnect_interval);
+}
+
+function onSocketError(error) {
+  console.log('socket error:', error);
+}
+
+function onSocketMessage(event) {
+  // console.log(event.data);
+
+  switch(state) {
+    case 'devicelist':
+      var data = JSON.parse(event.data);
+      var device = data["Results"][0];
+      send({ "Opcode" : "Attach", "Space": "SNES", "Operands": [ device ] });
+      refresh();
+      break;
+
+    case 'read0': // 0x0790 - 0x7AF  (location)
+      readAsUint8Array(event.data, function(s) {
+        update_location(s);
+      });
+      state = 'read1';
+      break;
+
+    case 'read1': // 0x09A4 - 0x09D9 (items and beams)
+      readAsUint8Array(event.data, function(s) {
+        update_items_and_beams(s);
+      });
+      state = 'read2';
+      break;
+
+    case 'read2': // 0xD820 - 0xD842 (events and bosses)
+      readAsUint8Array(event.data, function(s) {
+        update_events_and_bosses(s);
+        setTimeout(function() { refresh(); }, refresh_delay);
+      });
+      state = undefined;
+      break;
+  }
+}
+
+function connect() {
+  var address = document.getElementById('address').value;
+  socket = new WebSocket(address);
+  socket.onopen = onSocketOpen;
+  socket.onclose = onSocketClose;
+  socket.onerror = onSocketError;
+  socket.onmessage = onSocketMessage;
+
+  set_status("Connecting");
+}
+
+function refresh() {
+  state = 'read0';
+  send({ "Opcode": "GetAddress", "Space": "SNES", "Operands": [
+    'f50790', '1f', // 0x0790 - 0x7AF  (location)
+    'f509a4', '36', // 0x09A4 - 0x09D9 (items and beams)
+    'f5d820', '22', // 0xD820 - 0xD842 (events and bosses)
+  ] });
+}
+
+function start() {
+  set_status('Not Connected');
+}
+
+window.onload = start;
+    </script>
+  </head>
+  <body>
+    <div id="config">
+      <div>
+        <input type="text" id="address" name="address" value="ws://localhost:8080"/>
+        <button type="button" id="connect" onclick="connect()">Connect</button>
+      </div>
+      <br/>
+      <div>
+        <input type="checkbox" id="enable-debug" name="enable-debug">
+        <label for="enable-debug">Enable debugging</label>
+      </div>
+    </div>
+
+    <div id="debug" class="hidden">
+      <p>
+        <div>Status: <span id="status"></span></div>
+        <div>Region: <span id="region_id" /></div>
+        <div>Items: <span id="items" /></div>
+        <div>Beams: <span id="beams" /></div>
+        <div>Bosses: <span id="bosses" /></div>
+        <div>Events: <span id="events" /></div>
+        <div class="hidden">Power off: <span id="power_off" /></div>
+      </p>
+    </div>
+
+    <table id="itemgrid" class="hidden">
+      <tr>
+        <td><item id="charge" /></td>
+        <td><item id="ice" /></td>
+        <td><item id="wave" /></td>
+        <td><item id="spazer" /></td>
+        <td><item id="plasma" /></td>
+        <td><item id="hypercharge"></td>
+      </tr>
+      <tr>
+        <td><item id="morph" /></td>
+        <td><item id="bombs" /></td>
+        <td><item id="springball" /></td>
+        <td><item id="hijump" /></td>
+        <td><item id="spacejump" /></td>
+        <td><item id="gravboots"></td>
+      </tr>
+      <tr>
+        <td><item id="varia" /></td>
+        <td><item id="gravity" /></td>
+        <td><item id="metroidsuit" /></td>
+        <td><item id="speed" /></td>
+        <td><item id="screw" /></td>
+        <td><item id="darkvisor" /></td>
+      </tr>
+      <tr>
+        <td><item id="poweroff" /></td>
+        <td><item id="crashed" /></td>
+        <td><item id="torizoclaw" /></td>
+        <td><item id="damageamps" /></td>
+        <td><item id="accelcharges" /></td>
+        <td><item id="jumpboosts" /></td>
+      </tr>
+    </table>
+  </body>
+</html>
