@@ -96,19 +96,14 @@ function hide(elem) {
 }
 
 function update(updates) {
-  // console.log(updates);
   for (var id in updates) {
     var elem = document.getElementById(id);
     var cls = "collected";
     if (elem) {
       var done = updates[id];
       if (done) {
-        // console.log("Add " + cls);
-        // console.log(elem);
         elem.classList.add(cls);
       } else {
-        // console.log("Remove " + cls);
-        // console.log(elem);
         elem.classList.remove(cls);
       }
     } else {
@@ -118,7 +113,6 @@ function update(updates) {
 }
 
 function update_location(s) {
-  // console.log('update_location', s);
   var room_id = s[0x0C] << 8 | s[0x0B];
   var region_id = s[0x10] << 8 | s[0x0F];
 
@@ -169,7 +163,6 @@ function update_items_and_beams(s) {
 }
 
 function update_events_and_bosses(s) {
-  // console.log('events and bosses:', s);
   update_events(s.slice(0, 8));
   update_bosses(s.slice(8, 16));
   update_accel_charges(s.slice(0x20, 0x22));
@@ -187,8 +180,6 @@ function update_events(s) {
 
   bitmask1 = bitmask1 >>> 0;
   bitmask2 = bitmask2 >>> 0;
-
-  // console.log(bitmask1, bitmask2);
 
   document.getElementById('events').textContent =
     "0x" + bitmask1.toString(16) + " " +
@@ -289,7 +280,6 @@ function update_accel_charges(s) {
 function readAsArrayBuffer(data, cb) {
   reader = new FileReader();
   reader.onload = function() {
-    // console.log(reader.result);
     cb(reader.result);
   }
   reader.readAsArrayBuffer(data);
@@ -331,8 +321,6 @@ function onSocketError(error) {
 }
 
 function onSocketMessage(event) {
-  // console.log(event.data);
-
   switch(state) {
     case 'devicelist':
       var data = JSON.parse(event.data);
