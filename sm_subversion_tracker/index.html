@@ -80,6 +80,8 @@ var socket;
 var state;
 var refresh_delay = 1000;
 var reconnect_interval = 10000;
+var game_type;
+var grid;
 
 var subversion = 1;
 
@@ -303,10 +305,11 @@ function send(data, newState) {
 function onSocketOpen() {
   set_status('Connected');
 
-  var game_type = document.querySelector('input[name="game-type"]:checked').value;
+  game_type = document.querySelector('input[name="game-type"]:checked').value;
+  grid = document.getElementById('itemgrid-' + game_type);
 
   hide(document.getElementById('config'));
-  show(document.getElementById('itemgrid-' + game_type));
+  show(grid);
 
   if (document.getElementById('enable-debug').checked) {
     show(document.getElementById('debug'));
