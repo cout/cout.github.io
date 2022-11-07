@@ -352,7 +352,7 @@ function onSocketMessage(event) {
     case 'read2': // 0xD820 - 0xD842 (events and bosses)
       readAsUint8Array(event.data, function(s) {
         update_events_and_bosses(s);
-        setTimeout(function() { refresh(); }, refresh_delay);
+        schedule_refresh();
       });
       state = undefined;
       break;
@@ -377,6 +377,10 @@ function refresh() {
     'f509a4', '36', // 0x09A4 - 0x09D9 (items and beams)
     'f5d820', '22', // 0xD820 - 0xD842 (events and bosses)
   ] });
+}
+
+function schedule_refresh() {
+  setTimeout(function() { refresh(); }, refresh_delay);
 }
 
 function start() {
