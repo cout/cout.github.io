@@ -97,17 +97,20 @@ function hide(elem) {
 
 function update(updates) {
   for (var id in updates) {
-    var elem = document.getElementById(id);
-    var cls = "collected";
-    if (elem) {
-      var done = updates[id];
-      if (done) {
-        elem.classList.add(cls);
+    var elems = document.querySelectorAll('#' + id);
+    for (var i = 0; i < elems.length; ++i) {
+      var elem = elems[i];
+      var cls = "collected";
+      if (elem) {
+        var done = updates[id];
+        if (done) {
+          elem.classList.add(cls);
+        } else {
+          elem.classList.remove(cls);
+        }
       } else {
-        elem.classList.remove(cls);
+        // console.log("Could not find element: #" + id);
       }
-    } else {
-      // console.log("Could not find element: #" + id);
     }
   }
 }
