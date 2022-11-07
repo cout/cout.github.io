@@ -324,6 +324,11 @@ function onSocketError(error) {
   console.log('socket error:', error);
 }
 
+var current_msg;
+var current_msg_bytes;
+var expected_bytes;
+var handle_memory_read;
+
 function onSocketMessage(event) {
   switch(state) {
     case 'devicelist':
@@ -333,26 +338,16 @@ function onSocketMessage(event) {
       refresh();
       break;
 
-    case 'read0': // 0x0790 - 0x7AF  (location)
-      readAsUint8Array(event.data, function(s) {
-        update_location(s);
-      });
-      state = 'read1';
-      break;
-
-    case 'read1': // 0x09A4 - 0x09D9 (items and beams)
-      readAsUint8Array(event.data, function(s) {
-        update_items_and_beams(s);
-      });
-      state = 'read2';
-      break;
-
-    case 'read2': // 0xD820 - 0xD842 (events and bosses)
-      readAsUint8Array(event.data, function(s) {
-        update_events_and_bosses(s);
-        schedule_refresh();
-      });
-      state = undefined;
+    case 'read':
+      current_msg.push(event.data);
+      current_msg_bytes += event.data.size;
+      if (current_msg_bytes >= expected_bytes) {
+        state = undefined;
+        var blob = new Blob(current_msg);
+        readAsUint8Array(blob, function(ab) {
+          handle_memory_read(ab);
+        });
+      }
       break;
   }
 }
@@ -369,7 +364,17 @@ function connect() {
 }
 
 function refresh() {
-  state = 'read0';
+  state = 'read';
+  current_msg = [ ];
+  current_msg_bytes = 0;
+  expected_bytes = 0x1f + 0x36 + 0x22;
+  handle_memory_read = function(msg) {
+    var begin = 0, end = 0;
+    end += 0x1f; update_location(msg.slice(begin, end)); begin = end;
+    end += 0x36; update_items_and_beams(msg.slice(begin, end)); begin = end;
+    end += 0x22; update_events_and_bosses(msg.slice(begin, end)); begin = end;
+    schedule_refresh();
+  };
   send({ "Opcode": "GetAddress", "Space": "SNES", "Operands": [
     'f50790', '1f', // 0x0790 - 0x7AF  (location)
     'f509a4', '36', // 0x09A4 - 0x09D9 (items and beams)
