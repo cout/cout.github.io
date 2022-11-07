@@ -83,8 +83,6 @@ var reconnect_interval = 10000;
 var game_type;
 var grid;
 
-var subversion = 1;
-
 function set_status(status) {
   document.getElementById('status').textContent = status;
 }
@@ -202,7 +200,7 @@ function update_events(s) {
 }
 
 function update_bosses(s) {
-  if (subversion) {
+  if (game_type == 'subversion') {
     update_subversion_bosses(s);
   } else {
     update_vanilla_bosses(s);
