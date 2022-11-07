@@ -97,20 +97,17 @@ function hide(elem) {
 
 function update(updates) {
   for (var id in updates) {
-    var elems = document.querySelectorAll('#' + id);
-    for (var i = 0; i < elems.length; ++i) {
-      var elem = elems[i];
-      var cls = "collected";
-      if (elem) {
-        var done = updates[id];
-        if (done) {
-          elem.classList.add(cls);
-        } else {
-          elem.classList.remove(cls);
-        }
+    var elem = grid.querySelector('#' + id);
+    var cls = "collected";
+    if (elem) {
+      var done = updates[id];
+      if (done) {
+        elem.classList.add(cls);
       } else {
-        // console.log("Could not find element: #" + id);
+        elem.classList.remove(cls);
       }
+    } else {
+      // console.log("Could not find element: #" + id);
     }
   }
 }
