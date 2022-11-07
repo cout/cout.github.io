@@ -300,8 +300,10 @@ function send(data, newState) {
 function onSocketOpen() {
   set_status('Connected');
 
+  var game_type = document.querySelector('input[name="game-type"]:checked').value;
+
   hide(document.getElementById('config'));
-  show(document.getElementById('itemgrid'));
+  show(document.getElementById('itemgrid-' + game_type));
 
   if (document.getElementById('enable-debug').checked) {
     show(document.getElementById('debug'));
@@ -389,8 +391,18 @@ window.onload = start;
       </div>
       <br/>
       <div>
-        <input type="checkbox" id="enable-debug" name="enable-debug">
-        <label for="enable-debug">Enable debugging</label>
+        <div>
+          <input type="radio" id="game-type-vanilla" name="game-type" value="vanilla">
+          <label for="game-type-vanilla">Vanilla</label>
+        </div>
+        <div>
+          <input type="radio" id="game-type-subversion" name="game-type" value="subversion" checked>
+          <label for="game-type-subversion">Subversion</label>
+        </div>
+        <div>
+          <input type="checkbox" id="enable-debug" name="enable-debug">
+          <label for="enable-debug">Enable debugging</label>
+        </div>
       </div>
     </div>
 
@@ -406,7 +418,38 @@ window.onload = start;
       </p>
     </div>
 
-    <table id="itemgrid" class="hidden">
+    <table id="itemgrid-vanilla" class="hidden">
+      <tr>
+        <td><item id="morph" /></td>
+        <td><item id="bombs" /></td>
+        <td><item id="springball" /></td>
+        <td><item id="hijump" /></td>
+        <td><item id="spacejump" /></td>
+      </tr>
+      <tr>
+        <td><item id="charge" /></td>
+        <td><item id="ice" /></td>
+        <td><item id="wave" /></td>
+        <td><item id="spazer" /></td>
+        <td><item id="plasma" /></td>
+      </tr>
+      <tr>
+        <td><item id="varia" /></td>
+        <td><item id="gravity" /></td>
+        <td><item id="xray" /></td>
+        <td><item id="grapple" /></td>
+        <td><item id="screw" /></td>
+      </tr>
+      <tr>
+        <td><item id="kraid" /></td>
+        <td><item id="phantoon" /></td>
+        <td><item id="draygon" /></td>
+        <td><item id="ridley" /></td>
+        <td><item id="speed" /></td>
+      </tr>
+    </table>
+
+    <table id="itemgrid-subversion" class="hidden">
       <tr>
         <td><item id="charge" /></td>
         <td><item id="ice" /></td>
