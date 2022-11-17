@@ -10,6 +10,9 @@ body {
 .hidden {
   display: none;
 }
+.large {
+  font-size: xxx-large;
+}
 #debug {
   font-size: small;
 }
@@ -321,6 +324,10 @@ function onSocketOpen() {
     show(document.getElementById('debug'));
   }
 
+  if (document.getElementById('track-kills').checked) {
+    show(document.getElementById('kill-tracker'));
+  }
+
   state = "devicelist";
   send({ "Opcode": "Name", "Space": "SNES", "Operands": [ "Item Tracker" ] });
   send({ "Opcode": "DeviceList", "Space": "SNES", "Operands": [ ] });
@@ -427,6 +434,10 @@ window.onload = start;
           <input type="checkbox" id="enable-debug" name="enable-debug">
           <label for="enable-debug">Enable debugging</label>
         </div>
+        <div>
+          <input type="checkbox" id="track-kills" name="track-kills">
+          <label for="track-kills">Track kills</label>
+        </div>
       </div>
     </div>
 
@@ -439,9 +450,12 @@ window.onload = start;
         <div>Bosses: <span id="bosses" /></div>
         <div>Events: <span id="events" /></div>
         <div>Enemy health: <span id="enemyhealth" /></div>
-        <div>Kills: <span id="kills" /></div>
         <div class="hidden">Power off: <span id="power_off" /></div>
       </p>
+    </div>
+
+    <div id="kill-tracker" class="hidden">
+        <div class="large">Kills: <span id="kills" /></div>
     </div>
 
     <table id="itemgrid-vanilla" class="hidden">
