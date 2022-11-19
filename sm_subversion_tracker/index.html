@@ -79,8 +79,81 @@ item.collected::before {
 #jumpboosts::before { background-image:url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgBAMAAACBVGfHAAAAGFBMVEVHcExKrTmM7xD///9zSlIxISmca3verb2pEPh5AAAAAXRSTlMAQObYZgAAAHdJREFUKM+dzssNwCAMA9Cs4BWygldgBVZgBdavQz+qRNJDkRDxkwwYYK+ltAP9ITgTMOdFiMkSAHU64MrR2EGdFbVXIwFojpoEOZjHg3GxWwG4ARWE+DvvYOfHrAZKlFnDWCNHDW3M1uZoHyBRrqD3yGRI73/gAAQUN+vIybOFAAAAAElFTkSuQmCC); }
     </style>
     <script>
-var socket;
-var state;
+
+class Usb2snesClient {
+  constructor({address, reconnect_interval, whoami, logger, on_ready}) {
+    this.address = address;
+    this.reconnect_interval = reconnect_interval;
+    this.whoami = whoami;
+    this.logger = logger || console;
+    this.on_ready = on_ready || function() { };
+    this.socket = undefined;
+
+    this.connect();
+  }
+
+  connect() {
+    this.socket = new WebSocket(this.address);
+    this.socket.onopen = () => { this.register(); }
+    this.socket.onclose = () => { this.schedule_reconnect(); }
+    this.socket.onerror = (error) => { this.log_error(error); }
+  }
+
+  send(data) {
+    this.socket.send(JSON.stringify(data));
+  }
+
+  register() {
+    this.send({ "Opcode": "Name", "Space": "SNES", "Operands": [ this.whoami ] });
+
+    this.socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const device = data["Results"][0];
+      this.attach(device);
+    };
+    this.send({ "Opcode": "DeviceList", "Space": "SNES", "Operands": [ ] });
+  }
+
+  attach(device) {
+    this.send({ "Opcode" : "Attach", "Space": "SNES", "Operands": [ device ] });
+    this.on_ready();
+  }
+
+  get_address(locations, callback) {
+    let remaining_bytes = 0;
+    const operands = [ ];
+    for (const loc of locations) {
+      operands.push(loc[0], loc[1]);
+      remaining_bytes += parseInt(loc[1], 16);
+    }
+
+    const msgs = [ ];
+    this.socket.onmessage = (event) => {
+      msgs.push(event.data);
+      remaining_bytes -= event.data.size;
+      if (remaining_bytes <= 0) {
+        const blob = new Blob(msgs);
+        const reader = new FileReader();
+        reader.onload = () => { callback(new Uint8Array(reader.result)); };
+        reader.readAsArrayBuffer(blob);
+      }
+    };
+
+    this.send({ "Opcode": "GetAddress", "Space": "SNES", "Operands": operands });
+  }
+
+  schedule_reconnect() {
+    this.logger.log('socket closed; scheduling reconnect in ' +
+                    this.reconnect_interval + ' ms');
+    setTimeout(() => { this.connect() }, this.reconnect_interval);
+  }
+
+  log_error(error) {
+    this.logger.log('socket error:', error);
+  }
+};
+
+var client;
 var refresh_delay = 1000;
 var reconnect_interval = 10000;
 var game_type;
@@ -292,28 +365,7 @@ function update_enemy_health(s) {
   document.getElementById('enemyhealth').textContent = health;
 }
 
-function readAsArrayBuffer(data, cb) {
-  reader = new FileReader();
-  reader.onload = function() {
-    cb(reader.result);
-  }
-  reader.readAsArrayBuffer(data);
-}
-
-function readAsUint8Array(data, cb) {
-  readAsArrayBuffer(data, function(ab) {
-    var a = new Uint8Array(ab);
-    cb(a);
-  });
-}
-
-function send(data, newState) {
-  socket.send(JSON.stringify(data));
-}
-
-function onSocketOpen() {
-  set_status('Connected');
-
+function setup_grid() {
   game_type = document.querySelector('input[name="game-type"]:checked').value;
   grid = document.getElementById('itemgrid-' + game_type);
 
@@ -327,66 +379,20 @@ function onSocketOpen() {
   if (document.getElementById('track-kills').checked) {
     show(document.getElementById('kill-tracker'));
   }
-
-  state = "devicelist";
-  send({ "Opcode": "Name", "Space": "SNES", "Operands": [ "Item Tracker" ] });
-  send({ "Opcode": "DeviceList", "Space": "SNES", "Operands": [ ] });
-}
-
-function onSocketClose() {
-  set_status('Not Connected');
-  setTimeout(function() { connect() }, reconnect_interval);
-}
-
-function onSocketError(error) {
-  console.log('socket error:', error);
-}
-
-var current_msg;
-var current_msg_bytes;
-var expected_bytes;
-var handle_memory_read;
-
-function onSocketMessage(event) {
-  switch(state) {
-    case 'devicelist':
-      var data = JSON.parse(event.data);
-      var device = data["Results"][0];
-      send({ "Opcode" : "Attach", "Space": "SNES", "Operands": [ device ] });
-      refresh();
-      break;
-
-    case 'read':
-      current_msg.push(event.data);
-      current_msg_bytes += event.data.size;
-      if (current_msg_bytes >= expected_bytes) {
-        state = undefined;
-        var blob = new Blob(current_msg);
-        readAsUint8Array(blob, function(ab) {
-          handle_memory_read(ab);
-        });
-      }
-      break;
-  }
 }
 
 function connect() {
-  var address = document.getElementById('address').value;
-  socket = new WebSocket(address);
-  socket.onopen = onSocketOpen;
-  socket.onclose = onSocketClose;
-  socket.onerror = onSocketError;
-  socket.onmessage = onSocketMessage;
-
-  set_status("Connecting");
+  const address = document.getElementById('address').value;
+  const on_ready = () => {
+    setup_grid();
+    refresh();
+  };
+  client = new Usb2snesClient({address, reconnect_interval, whoami:
+                              "Subversion Item Tracker", on_ready });
 }
 
 function refresh() {
-  state = 'read';
-  current_msg = [ ];
-  current_msg_bytes = 0;
-  expected_bytes = 0x1f + 0x36 + 0x22 + 0x2;
-  handle_memory_read = function(msg) {
+  const cb = (msg) => {
     var begin = 0, end = 0;
     end += 0x1f; update_location(msg.slice(begin, end)); begin = end;
     end += 0x36; update_items_and_beams(msg.slice(begin, end)); begin = end;
@@ -394,12 +400,12 @@ function refresh() {
     end += 0x2; update_enemy_health(msg.slice(begin, end)); begin = end;
     schedule_refresh();
   };
-  send({ "Opcode": "GetAddress", "Space": "SNES", "Operands": [
-    'f50790', '1f', // 0x0790 - 0x7AF  (location)
-    'f509a4', '36', // 0x09A4 - 0x09D9 (items and beams)
-    'f5d820', '24', // 0xD820 - 0xD842 (events and bosses)
-    'f50f8c', '2',
-  ] });
+  client.get_address([
+    [ 'f50790', '1f' ], // 0x0790 - 0x7AF  (location)
+    [ 'f509a4', '36' ], // 0x09A4 - 0x09D9 (items and beams)
+    [ 'f5d820', '24' ], // 0xD820 - 0xD844 (events and bosses)
+    [ 'f50f8c',  '2' ], // 0x0F8C - 0x0F8D (enemy health)
+  ], cb);
 }
 
 function schedule_refresh() {
